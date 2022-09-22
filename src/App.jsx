@@ -4,10 +4,28 @@ import './App.css';
 
 function App() {
   const [request, setRequest] = useState(undefined);
+  const [playlist, setPlaylist] = useState([]);
+
+  const client = axios.create({
+    baseURL: 'http://localhost:3008/',
+    proxy: false,
+  });
+
+  const audioElement = new Audio('http://localhost:3008/audio');
+
+  useEffect(() => {
+    if (playlist.data) {
+      console.log(playlist.data);
+    }
+  }, [playlist]);
 
   useEffect(() => {
     if (request === 'play') {
-      console.log('play......');
+      audioElement.play();
+    } else if (request === 'playlist') {
+      client.get('/alltracks').then(response => {
+        setPlaylist(response);
+      });
     } else {
       console.log(request);
     }
@@ -95,8 +113,18 @@ function App() {
             >
               <i
                 className="fas fa-forward"
-                href="#"
                 id="forward"
+                onClick={e => handleClick(e.target.id)}
+              ></i>
+            </button>
+            <button
+              className="btn lg neu"
+              id="playlist"
+              onClick={e => handleClick(e.target.id)}
+            >
+              <i
+                className="fa-solid fa-list"
+                id="playlist"
                 onClick={e => handleClick(e.target.id)}
               ></i>
             </button>
@@ -108,6 +136,17 @@ function App() {
             <i className="fas fa-angle-up"></i>
             <span>LYRICS</span>
           </div>
+        </div>
+        <div className="iphone neu">
+          {playlist.length > 0 ? (
+            <ul>
+              {playlist.data.map(x => {
+                <li>{x}</li>;
+              })}
+            </ul>
+          ) : (
+            <div>loading...</div>
+          )}
         </div>
       </div>
     </div>
