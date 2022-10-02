@@ -1,38 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import axios from 'axios';
+import { FixedSizeList as List } from 'react-window';
+import { useServerStream } from './hooks/useServerStream';
 import './App.css';
 
 function App() {
   const [request, setRequest] = useState(undefined);
-  const [playlist, setPlaylist] = useState([]);
+  const [playlist, setPlaylist] = useState();
+  const [audioElement, setAudioElement] = useState('');
 
   const client = axios.create({
     baseURL: 'http://localhost:3008/',
     proxy: false,
   });
 
-  const audioElement = new Audio('http://localhost:3008/audio');
+  /*   const audioElement = new Audio('http://localhost:3008/audio', {
+    preload: false,
+  }); */
+
+  /*   audioElement.autoplay === false;
+  const audioRef = useRef(audioElement);  */
 
   useEffect(() => {
-    if (playlist.data) {
-      console.log(playlist.data);
-    }
-  }, [playlist]);
-
-  useEffect(() => {
-    if (request === 'play') {
-      audioElement.play();
-    } else if (request === 'playlist') {
-      client.get('/alltracks').then(response => {
-        setPlaylist(response);
-      });
-    } else {
-      console.log(request);
-    }
+    const getPlaylist = async () => {
+      console.log('pl');
+      try {
+        await client.get('/alltracks').then(response => {
+          setPlaylist(response);
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    if (request === 'playlist') getPlaylist();
   }, [request]);
 
-  const handleClick = e => {
-    setRequest(e);
+  const handleClick = id => {
+    console.log(id);
+    switch (id) {
+      case 'playlist':
+        setRequest('playlist');
+      case 'default':
+        console.log(id);
+    }
   };
 
   return (
@@ -134,19 +144,22 @@ function App() {
           </div>
           <div className="lyrics">
             <i className="fas fa-angle-up"></i>
-            <span>LYRICS</span>
+            <span>Lyrux</span>
           </div>
         </div>
-        <div className="iphone neu">
-          {playlist.length > 0 ? (
-            <ul>
-              {playlist.data.map(x => {
-                <li>{x}</li>;
-              })}
-            </ul>
-          ) : (
-            <div>loading...</div>
-          )}
+        <div>
+          {playlist && playlist.data ? (
+            <List
+              className="List"
+              height={500}
+              itemCount={playlist.data.length}
+              itemSize={60}
+              width={320}
+              itemData={playlist.data}
+            >
+              {Row}
+            </List>
+          ) : null}
         </div>
       </div>
     </div>
@@ -154,3 +167,43 @@ function App() {
 }
 
 export default App;
+
+const Row = ({ data, index, style }) => {
+  const item = data[index];
+  const [track, setTrack] = useState();
+
+  const [url, setUrl] = useState();
+  const response = useServerStream(url);
+
+  useEffect(() => {
+    if (response) {
+      const t = new Audio(`http://localhost:3008/tracks/${url}`);
+      console.log(t.controls);
+      t.play();
+      setTimeout(() => t.pause(), 5000);
+    }
+  }, [response]);
+
+  /*   useEffect(() => {
+    if (track) {
+      console.log(url);
+    }
+  }); */
+
+  const handleRequest = e => {
+    e.preventDefault();
+    setUrl(e.target.id);
+  };
+  return (
+    <a
+      href={data[index].file}
+      id={data[index]._id}
+      style={style}
+      key={data[index]._id}
+      className="file-item"
+      onClick={e => handleRequest(e)}
+    >
+      {data[index].artist}🔥{data[index].album}🔥{data[index].title}
+    </a>
+  );
+};

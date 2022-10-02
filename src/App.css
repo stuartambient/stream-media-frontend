@@ -11,6 +11,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  column-gap: 2rem;
 }
 
 .iphone {
@@ -114,4 +115,35 @@ body {
 
 .red {
   color: #e22d49;
+}
+
+.playlist ul {
+  padding: 0;
+  list-style: none;
+  border-radius: 10px;
+}
+
+.playlist li {
+  height: 2rem;
+  border: 1px solid gray;
+  color: white;
+  display: flex;
+  align-items: center;
+}
+
+/* .playlist li:nth-child(even) {
+  background: darkblue;
+}
+
+.playlist li:nth-child(odd) {
+  background: black;
+} */
+
+.file-item {
+  font-size: 0.8rem;
+  height: 1.2rem;
+  border: 2px solid blue;
+  display: grid;
+  grid-template-rows: repeat(3, 1rem);
+  align-content: ;
 }
