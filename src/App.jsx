@@ -1,29 +1,26 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
 import axios from 'axios';
 import { FixedSizeList as List } from 'react-window';
-import { useServerStream } from './hooks/useServerStream';
+import * as mmb from 'music-metadata-browser';
+import { v4 as uuidv4 } from 'uuid';
+import { useSelectTrack, usePlaylist } from './hooks/useServer';
+import Row from './components/Row';
 import './App.css';
 
 function App() {
   const [request, setRequest] = useState(undefined);
   const [playlist, setPlaylist] = useState();
-  const [audioElement, setAudioElement] = useState('');
+  const [url, setUrl] = useState();
+  const response = useSelectTrack(url);
+  const audio = new Audio();
 
   const client = axios.create({
     baseURL: 'http://localhost:3008/',
     proxy: false,
   });
 
-  /*   const audioElement = new Audio('http://localhost:3008/audio', {
-    preload: false,
-  }); */
-
-  /*   audioElement.autoplay === false;
-  const audioRef = useRef(audioElement);  */
-
   useEffect(() => {
     const getPlaylist = async () => {
-      console.log('pl');
       try {
         await client.get('/alltracks').then(response => {
           setPlaylist(response);
@@ -36,7 +33,6 @@ function App() {
   }, [request]);
 
   const handleClick = id => {
-    console.log(id);
     switch (id) {
       case 'playlist':
         setRequest('playlist');
@@ -44,6 +40,25 @@ function App() {
         console.log(id);
     }
   };
+
+  useEffect(() => {
+    if (response) {
+      const file = URL.createObjectURL(response.data);
+      audio.src = file;
+      audio.play();
+    }
+  }, [response]);
+
+  const handleListItem = e => {
+    e.preventDefault();
+    setUrl(e.target.id);
+  };
+
+  const outerElementType = forwardRef((props, ref) => (
+    <div ref={ref} onClick={handleListItem} {...props} />
+  ));
+
+  const getKey = () => uuidv4();
 
   return (
     <div className="App">
@@ -150,6 +165,8 @@ function App() {
         <div>
           {playlist && playlist.data ? (
             <List
+              itemKey={getKey}
+              outerElementType={outerElementType}
               className="List"
               height={500}
               itemCount={playlist.data.length}
@@ -167,43 +184,3 @@ function App() {
 }
 
 export default App;
-
-const Row = ({ data, index, style }) => {
-  const item = data[index];
-  const [track, setTrack] = useState();
-
-  const [url, setUrl] = useState();
-  const response = useServerStream(url);
-
-  useEffect(() => {
-    if (response) {
-      const t = new Audio(`http://localhost:3008/tracks/${url}`);
-      console.log(t.controls);
-      t.play();
-      setTimeout(() => t.pause(), 5000);
-    }
-  }, [response]);
-
-  /*   useEffect(() => {
-    if (track) {
-      console.log(url);
-    }
-  }); */
-
-  const handleRequest = e => {
-    e.preventDefault();
-    setUrl(e.target.id);
-  };
-  return (
-    <a
-      href={data[index].file}
-      id={data[index]._id}
-      style={style}
-      key={data[index]._id}
-      className="file-item"
-      onClick={e => handleRequest(e)}
-    >
-      {data[index].artist}🔥{data[index].album}🔥{data[index].title}
-    </a>
-  );
-};
