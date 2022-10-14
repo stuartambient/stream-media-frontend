@@ -53,6 +53,7 @@ export const usePlaylist = (pageNumber, textSearch) => {
         setItems(prevItems => {
           return [...prevItems, ...res.data];
         });
+        /* OR GREATER THEN 0 */
         setHasMore(res.data.length >= 100);
         setLoading(false);
       })
@@ -61,5 +62,5 @@ export const usePlaylist = (pageNumber, textSearch) => {
       });
   }, [pageNumber, textSearch]);
 
-  return { loading, items, setItems, hasMore, error };
+  return { loading, items, /* setItems, */ hasMore, error };
 };

@@ -5,14 +5,19 @@ import * as mmb from 'music-metadata-browser';
 import { v4 as uuidv4 } from 'uuid';
 import { useSelectTrack, usePlaylist } from './hooks/useServer';
 import Row from './components/Row';
+import InfiniteList from './Components/InfiniteList';
 import './App.css';
 
 function App() {
   const [request, setRequest] = useState(undefined);
   const [playlist, setPlaylist] = useState();
   const [url, setUrl] = useState();
-  const response = useSelectTrack(url);
+  /* const response = useSelectTrack(url); */
+
   const audio = new Audio();
+  const audioRef = useRef(audio);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
 
   const client = axios.create({
     baseURL: 'http://localhost:3008/',
@@ -36,55 +41,71 @@ function App() {
     switch (id) {
       case 'playlist':
         setRequest('playlist');
-      case 'default':
-        console.log(id);
+      case 'v-up':
+        if (audio.volume >= 1.0) return;
+        return (audio.volume += 0.1);
+      case 'v-down':
+        if (audio.volumne <= 0) return;
+        return (audio.volume -= 0.1);
+      default:
+        return;
     }
   };
 
   useEffect(() => {
-    if (response) {
-      const file = URL.createObjectURL(response.data);
-      audio.src = file;
-      audio.play();
-    }
-  }, [response]);
+    audioRef.current.addEventListener('timeupdate', () => {
+      setCurrentTime(audioRef.current.currentTime);
+    });
+    audioRef.current.addEventListener('abort', () => console.log('aborted'));
+    audioRef.current.addEventListener('emptied', () => {
+      console.log('emptied');
+    });
+
+    audioRef.current.addEventListener('loadedmetadata', () => {
+      audioRef.current.play();
+      setDuration(audioRef.current.duration);
+      console.log('loadedmetadata');
+      /*  audio.play(); */
+    });
+
+    audioRef.current.addEventListener('volumechange', () =>
+      console.log(audio.volume)
+    );
+  }, [audio]);
 
   const handleListItem = e => {
     e.preventDefault();
-    setUrl(e.target.id);
+    audioRef.current.src = `http://localhost:3008/tracks/${e.target.id}`;
+    audioRef.current.load();
+    setDuration(0);
+    setCurrentTime(0);
   };
-
-  const outerElementType = forwardRef((props, ref) => (
-    <div ref={ref} onClick={handleListItem} {...props} />
-  ));
 
   const getKey = () => uuidv4();
 
   return (
     <div className="App">
       <div className="container">
-        <div className="iphone neu">
-          <div className="title">
-            <div>
-              <i className="fas fa-chevron-left"></i>
-            </div>
-            <div>NOW PLAYING</div>
-            <div>
-              <i className="fas fa-ellipsis-v"></i>
-            </div>
+        <div>
+          <div className="audio-duration">Duration: {duration}</div>
+          <div className="time-elapsed">Elapsed: {currentTime}</div>
+          <div
+            id="v-up"
+            onClick={e => handleClick(e.target.id)}
+            style={{ cursor: 'pointer' }}
+          >
+            Volume +++
           </div>
-          <div className="album-cover">
-            <div className="album-overlay"></div>
-            <img
-              src="https://images-na.ssl-images-amazon.com/images/I/810GyyWObmL._SL1400_.jpg"
-              alt=""
-            />
-            <h2 className="song-title">Redbone</h2>
-            <h3 className="artist-title">Childish Gambino</h3>
+          <div
+            id="v-down"
+            onClick={e => handleClick(e.target.id)}
+            style={{ cursor: 'pointer' }}
+          >
+            Volume ---
           </div>
           <div className="buttons">
             <button
-              className="btn lg red neu"
+              className="btn lg neu"
               id="like"
               onClick={e => handleClick(e.target.id)}
             >
@@ -96,7 +117,7 @@ function App() {
               ></i>
             </button>
             <button
-              className="btn lg red neu"
+              className="btn lg neu"
               id="pause"
               onClick={e => handleClick(e.target.id)}
             >
@@ -154,30 +175,12 @@ function App() {
               ></i>
             </button>
           </div>
-          <div className="track neu">
-            <div></div>
-          </div>
-          <div className="lyrics">
-            <i className="fas fa-angle-up"></i>
-            <span>Lyrux</span>
-          </div>
         </div>
-        <div>
-          {playlist && playlist.data ? (
-            <List
-              itemKey={getKey}
-              outerElementType={outerElementType}
-              className="List"
-              height={500}
-              itemCount={playlist.data.length}
-              itemSize={60}
-              width={320}
-              itemData={playlist.data}
-            >
-              {Row}
-            </List>
-          ) : null}
-        </div>
+        {request === 'playlist' ? (
+          <InfiniteList onClick={handleListItem} />
+        ) : (
+          <div style={{ height: '30px', width: '100%' }}>Playlist</div>
+        )}
       </div>
     </div>
   );

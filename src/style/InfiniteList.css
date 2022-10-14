@@ -1,0 +1,5 @@
+.item {
+  background: lightgray;
+  display: grid;
+  border-bottom: 5px inset darkgray;
+}
