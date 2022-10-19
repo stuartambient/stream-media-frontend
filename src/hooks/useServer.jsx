@@ -54,7 +54,7 @@ export const usePlaylist = (pageNumber, textSearch) => {
           return [...prevItems, ...res.data];
         });
         /* OR GREATER THEN 0 */
-        setHasMore(res.data.length >= 100);
+        setHasMore(res.data.length > 1);
         setLoading(false);
       })
       .catch(e => {

@@ -5,7 +5,7 @@ import { usePlaylist } from '../hooks/useServer';
 import '../style/InfiniteList.css';
 
 const InfiniteList = ({ textSearch, onClick }) => {
-  const [pageNumber, setPageNumber] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
   const { loading, items, hasMore, error } = usePlaylist(
     pageNumber,
     textSearch
@@ -24,7 +24,11 @@ const InfiniteList = ({ textSearch, onClick }) => {
             setPageNumber(prevPageNumber => prevPageNumber + 1);
           }
         },
-        { root: document.querySelector('.results') }
+        {
+          root: document.querySelector('.results'),
+          rootMargin: '0px 0px 10px 0px',
+          threshold: 1.0,
+        }
       );
       if (node) observer.current.observe(node);
     },
@@ -49,43 +53,18 @@ const InfiniteList = ({ textSearch, onClick }) => {
         {items.map((item, index) => {
           if (items.length === index + 1) {
             return (
-              <div
-                className="item"
-                key={getKey()}
-                ref={lastItemElement}
-                item={item.file}
-              >
+              <div className="item" key={getKey()} ref={lastItemElement}>
                 <a href={item._id} id={item._id} onClick={onClick}>
                   {item.file}
                 </a>
-                <p>Album: {item.album} </p>
-                <p>Artist: {item.artist}</p>
-                <p>Title: {item.title}</p>
-                {item.genre && item.genre.length ? (
-                  item.genre.map((g, i) => {
-                    return <p key={getKey()}>{g}</p>;
-                  })
-                ) : (
-                  <p>null</p>
-                )}
               </div>
             );
           } else {
             return (
-              <div className="item" key={getKey()} item={item.file}>
+              <div className="item" key={getKey()}>
                 <a href={item._id} onClick={onClick} id={item._id}>
                   {item.file}
                 </a>
-                <p>Album: {item.album}</p>
-                <p>Artist: {item.artist}</p>
-                <p>Title: {item.title}</p>
-                {item.genre && item.genre.length ? (
-                  item.genre.map((g, i) => {
-                    return <p key={getKey()}>{g}</p>;
-                  })
-                ) : (
-                  <p>null</p>
-                )}
               </div>
             );
           }

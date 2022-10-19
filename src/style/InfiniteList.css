@@ -2,4 +2,5 @@
   background: lightgray;
   display: grid;
   border-bottom: 5px inset darkgray;
+  padding: 0.5rem;
 }

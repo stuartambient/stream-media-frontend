@@ -11,7 +11,7 @@ import './App.css';
 function App() {
   const [request, setRequest] = useState(undefined);
   const [playlist, setPlaylist] = useState();
-  const [url, setUrl] = useState();
+  /*   const [url, setUrl] = useState(); */
   /* const response = useSelectTrack(url); */
 
   const audio = new Audio();
@@ -53,32 +53,44 @@ function App() {
   };
 
   useEffect(() => {
-    audioRef.current.addEventListener('timeupdate', () => {
-      setCurrentTime(audioRef.current.currentTime);
-    });
-    audioRef.current.addEventListener('abort', () => console.log('aborted'));
-    audioRef.current.addEventListener('emptied', () => {
-      console.log('emptied');
-    });
-
-    audioRef.current.addEventListener('loadedmetadata', () => {
+    audioRef.current.onloadedmetadata = () => {
       audioRef.current.play();
-      setDuration(audioRef.current.duration);
-      console.log('loadedmetadata');
-      /*  audio.play(); */
-    });
+      /* setDuration(audioRef.current.duration); */
+      const minutes = Math.floor(audioRef.current.duration / 60);
+      const seconds = Math.floor(audioRef.current.duration - minutes * 60);
+      const currentTime =
+        str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
+      setDuration(currentTime);
+    };
+    const str_pad_left = (string, pad, length) => {
+      return (new Array(length + 1).join(pad) + string).slice(-length);
+    };
+  }, [audioRef.current]);
 
-    audioRef.current.addEventListener('volumechange', () =>
-      console.log(audio.volume)
-    );
-  }, [audio]);
+  useEffect(() => {
+    audioRef.current.onvolumechange = () => console.log(audio.volume);
+  }, [audioRef.current]);
+
+  useEffect(() => {
+    /*  audioRef.current.ontimeupdate = e => setCurrentTime(e.target.currentTime); */
+
+    audioRef.current.ontimeupdate = () => {
+      const minutes = Math.floor(audioRef.current.currentTime / 60);
+      const seconds = Math.floor(audioRef.current.currentTime - minutes * 60);
+      const currentTime =
+        str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
+      setCurrentTime(currentTime);
+    };
+    const str_pad_left = (string, pad, length) => {
+      return (new Array(length + 1).join(pad) + string).slice(-length);
+    };
+  }, [audioRef]);
 
   const handleListItem = e => {
+    console.log('target: ', e.target.id);
     e.preventDefault();
     audioRef.current.src = `http://localhost:3008/tracks/${e.target.id}`;
     audioRef.current.load();
-    setDuration(0);
-    setCurrentTime(0);
   };
 
   const getKey = () => uuidv4();
