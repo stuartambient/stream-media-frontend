@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FixedSizeList as List } from 'react-window';
 import * as mmb from 'music-metadata-browser';
 import { v4 as uuidv4 } from 'uuid';
-import { useSelectTrack, usePlaylist } from './hooks/useServer';
+import { useMetadata, usePlaylist } from './hooks/useServer';
 import Row from './components/Row';
 import InfiniteList from './Components/InfiniteList';
 import './App.css';
@@ -11,18 +11,23 @@ import './App.css';
 function App() {
   const [request, setRequest] = useState(undefined);
   const [playlist, setPlaylist] = useState();
-  /*   const [url, setUrl] = useState(); */
-  /* const response = useSelectTrack(url); */
+  const [url, setUrl] = useState();
+  const { metadata, cover } = useMetadata(url);
 
   const audio = new Audio();
   const audioRef = useRef(audio);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [pause, setPause] = useState(false);
 
   const client = axios.create({
     baseURL: 'http://localhost:3008/',
     proxy: false,
   });
+
+  useEffect(() => {
+    if (metadata) console.log(metadata, cover);
+  }, [metadata, cover]);
 
   useEffect(() => {
     const getPlaylist = async () => {
@@ -41,20 +46,27 @@ function App() {
     switch (id) {
       case 'playlist':
         setRequest('playlist');
+      case 'pause':
+        setPause(!pause);
       case 'v-up':
-        if (audio.volume >= 1.0) return;
-        return (audio.volume += 0.1);
+        if (audioRef.current.volume >= 1.0) return;
+        return (audioRef.current.volume += 0.1);
       case 'v-down':
-        if (audio.volumne <= 0) return;
-        return (audio.volume -= 0.1);
+        if (audioRef.current.volume <= 0) return;
+        return (audioRef.current.volume -= 0.1);
       default:
         return;
     }
   };
 
   useEffect(() => {
-    audioRef.current.onloadedmetadata = () => {
+    audioRef.current.onloadedmetadata = async () => {
       audioRef.current.play();
+
+      /*   mmb.parseNodeStream(audio).then(metadata => {
+        console.log(util.inspect(metadata, { showHidden: false, depth: null }));
+        readableStream.destroy();
+      }); */
       /* setDuration(audioRef.current.duration); */
       const minutes = Math.floor(audioRef.current.duration / 60);
       const seconds = Math.floor(audioRef.current.duration - minutes * 60);
@@ -77,8 +89,10 @@ function App() {
     audioRef.current.ontimeupdate = () => {
       const minutes = Math.floor(audioRef.current.currentTime / 60);
       const seconds = Math.floor(audioRef.current.currentTime - minutes * 60);
+
       const currentTime =
         str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
+
       setCurrentTime(currentTime);
     };
     const str_pad_left = (string, pad, length) => {
@@ -86,10 +100,16 @@ function App() {
     };
   }, [audioRef]);
 
-  const handleListItem = e => {
+  /*   useEffect(() => {
+    if (pause) audioRef.current.pause();
+    if (!pause) audioRef.current.play();
+  }, [pause]); */
+
+  const handleListItem = async e => {
     console.log('target: ', e.target.id);
     e.preventDefault();
     audioRef.current.src = `http://localhost:3008/tracks/${e.target.id}`;
+    setUrl(`track-metadata/${e.target.id}`);
     audioRef.current.load();
   };
 
@@ -187,6 +207,24 @@ function App() {
               ></i>
             </button>
           </div>
+          {metadata ? (
+            <>
+              <div>Artist: {metadata.common.artist}</div>
+              <div>Album: {metadata.common.album}</div>
+              <div>Title: {metadata.common.title}</div>
+            </>
+          ) : null}
+          {cover ? (
+            <>
+              <div>
+                <img
+                  src={`data:image/png;base64,${cover}`}
+                  alt=""
+                  style={{ width: '200px', height: '200px' }}
+                />
+              </div>
+            </>
+          ) : null}
         </div>
         {request === 'playlist' ? (
           <InfiniteList onClick={handleListItem} />

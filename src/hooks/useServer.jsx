@@ -6,33 +6,42 @@ const client = axios.create({
   proxy: false,
 });
 
-export const useSelectTrack = url => {
-  const [response, setResponse] = useState();
+export const useMetadata = url => {
+  const [metadata, setMetadata] = useState();
+  const [cover, setCover] = useState();
 
-  const config = {
+  /*  const config = {
     headers: {
       'Content-Type': 'audio/mpeg',
     },
-  };
+  }; */
 
   useEffect(() => {
-    const getTrack = async () => {
+    const getTrackMetadata = async () => {
       try {
-        await client
-          .get(`/tracks/${url}`, {
-            responseType: 'blob',
-          })
-          .then(res => {
-            setResponse(res);
-          });
+        await client.get(url).then(res => {
+          setMetadata(res.data.data.obj);
+          if (res.data.data.image.data.data) {
+            /* setCover(res.data.data.image.data); */
+            setCover(
+              btoa(
+                String.fromCharCode(
+                  ...new Uint8Array(res.data.data.image.data.data)
+                )
+              )
+            );
+          } else {
+            setCover(undefined);
+          }
+        });
       } catch (e) {
         console.log(e);
       }
     };
 
-    if (url) getTrack();
+    if (url) getTrackMetadata();
   }, [url]);
-  return response;
+  return { metadata, cover };
 };
 
 export const usePlaylist = (pageNumber, textSearch) => {
