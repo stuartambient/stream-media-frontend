@@ -8,7 +8,7 @@ const client = axios.create({
 
 export const useMetadata = url => {
   const [metadata, setMetadata] = useState();
-  const [cover, setCover] = useState();
+  const [cover, setCover] = useState(undefined);
 
   /*  const config = {
     headers: {
@@ -20,18 +20,21 @@ export const useMetadata = url => {
     const getTrackMetadata = async () => {
       try {
         await client.get(url).then(res => {
-          setMetadata(res.data.data.obj);
-          if (res.data.data.image.data.data) {
-            /* setCover(res.data.data.image.data); */
+          console.log(res.data.metadata);
+          if (res.data.cover === 'no available image') {
+            setCover(res.data.cover);
+          } else {
             setCover(
               btoa(
-                String.fromCharCode(
-                  ...new Uint8Array(res.data.data.image.data.data)
-                )
+                String.fromCharCode(...new Uint8Array(res.data.cover.data.data))
               )
             );
+          }
+
+          if (!res.data.metadata) {
+            setMetadata(undefined);
           } else {
-            setCover(undefined);
+            setMetadata(res.data.metadata);
           }
         });
       } catch (e) {

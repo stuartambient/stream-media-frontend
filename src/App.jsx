@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
 import axios from 'axios';
 import { FixedSizeList as List } from 'react-window';
-import * as mmb from 'music-metadata-browser';
+
 import { v4 as uuidv4 } from 'uuid';
 import { useMetadata, usePlaylist } from './hooks/useServer';
 import Row from './components/Row';
@@ -12,6 +12,8 @@ function App() {
   const [request, setRequest] = useState(undefined);
   const [playlist, setPlaylist] = useState();
   const [url, setUrl] = useState();
+  const [currentTrack, setCurrentTrack] = useState();
+  const [playNext, setPlayNext] = useState(false);
   const { metadata, cover } = useMetadata(url);
 
   const audio = new Audio();
@@ -26,8 +28,13 @@ function App() {
   });
 
   useEffect(() => {
-    if (metadata) console.log(metadata, cover);
-  }, [metadata, cover]);
+    if (currentTime === duration) {
+      /* audioRef.current.src = `http://localhost:3008/tracks/${nextTrack}`;
+      setUrl(`track-metadata/${nextTrack}`);
+      audioRef.current.load(); */
+      setPlayNext(true);
+    }
+  }, [currentTime, duration]);
 
   useEffect(() => {
     const getPlaylist = async () => {
@@ -46,8 +53,8 @@ function App() {
     switch (id) {
       case 'playlist':
         setRequest('playlist');
-      case 'pause':
-        setPause(!pause);
+      case 'pauseplay':
+        setPause(() => !pause);
       case 'v-up':
         if (audioRef.current.volume >= 1.0) return;
         return (audioRef.current.volume += 0.1);
@@ -63,11 +70,6 @@ function App() {
     audioRef.current.onloadedmetadata = async () => {
       audioRef.current.play();
 
-      /*   mmb.parseNodeStream(audio).then(metadata => {
-        console.log(util.inspect(metadata, { showHidden: false, depth: null }));
-        readableStream.destroy();
-      }); */
-      /* setDuration(audioRef.current.duration); */
       const minutes = Math.floor(audioRef.current.duration / 60);
       const seconds = Math.floor(audioRef.current.duration - minutes * 60);
       const currentTime =
@@ -100,17 +102,20 @@ function App() {
     };
   }, [audioRef]);
 
-  /*   useEffect(() => {
+  useEffect(() => {
     if (pause) audioRef.current.pause();
-    if (!pause) audioRef.current.play();
-  }, [pause]); */
+    if (!pause && url) audioRef.current.play();
+  }, [pause, audioRef]);
 
   const handleListItem = async e => {
-    console.log('target: ', e.target.id);
+    /* console.log('target: ', e.target.id, 'index: ', e.target.attributes.val); */
     e.preventDefault();
+    setCurrentTrack(+e.target.getAttribute('val'));
+    setPause(false);
     audioRef.current.src = `http://localhost:3008/tracks/${e.target.id}`;
     setUrl(`track-metadata/${e.target.id}`);
     audioRef.current.load();
+    setPlayNext(false);
   };
 
   const getKey = () => uuidv4();
@@ -118,7 +123,7 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <div>
+        <div className="audio-player">
           <div className="audio-duration">Duration: {duration}</div>
           <div className="time-elapsed">Elapsed: {currentTime}</div>
           <div
@@ -148,18 +153,34 @@ function App() {
                 onClick={e => handleClick(e.target.id)}
               ></i>
             </button>
-            <button
-              className="btn lg neu"
-              id="pause"
-              onClick={e => handleClick(e.target.id)}
-            >
-              <i
-                className="fa-solid fa-pause"
-                href="#"
-                id="pause"
+
+            {pause ? (
+              <button
+                className="btn lg neu"
+                id="pauseplay"
                 onClick={e => handleClick(e.target.id)}
-              ></i>
-            </button>
+              >
+                <i
+                  className="fas fa-play"
+                  href="#"
+                  id="pauseplay"
+                  onClick={e => handleClick(e.target.id)}
+                ></i>
+              </button>
+            ) : (
+              <button
+                className="btn lg neu"
+                id="pauseplay"
+                onClick={e => handleClick(e.target.id)}
+              >
+                <i
+                  className="fa-solid fa-pause"
+                  href="#"
+                  id="pauseplay"
+                  onClick={e => handleClick(e.target.id)}
+                ></i>
+              </button>
+            )}
             <button
               className="btn lg neu"
               id="backward"
@@ -172,18 +193,7 @@ function App() {
                 onClick={e => handleClick(e.target.id)}
               ></i>
             </button>
-            <button
-              className="btn lg neu"
-              id="play"
-              onClick={e => handleClick(e.target.id)}
-            >
-              <i
-                className="fas fa-play"
-                href="#"
-                id="play"
-                onClick={e => handleClick(e.target.id)}
-              ></i>
-            </button>
+
             <button
               className="btn lg neu"
               id="forward"
@@ -214,7 +224,7 @@ function App() {
               <div>Title: {metadata.common.title}</div>
             </>
           ) : null}
-          {cover ? (
+          {cover && cover !== 'no available image' ? (
             <>
               <div>
                 <img
@@ -224,12 +234,18 @@ function App() {
                 />
               </div>
             </>
-          ) : null}
+          ) : (
+            <p>{cover}</p>
+          )}
         </div>
         {request === 'playlist' ? (
-          <InfiniteList onClick={handleListItem} />
+          <InfiniteList
+            onClick={handleListItem}
+            currentTrack={currentTrack}
+            playNext={playNext}
+          />
         ) : (
-          <div style={{ height: '30px', width: '100%' }}>Playlist</div>
+          <div className="results">Playlist</div>
         )}
       </div>
     </div>

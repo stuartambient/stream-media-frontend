@@ -10,9 +10,22 @@ body {
   height: 100vh;
   display: grid;
   grid-template-columns: 50% 50%;
-  grid-template-rows: 500px;
-  align-items: center;
+  grid-template-rows: 20px 450px 20px;
+  /* align-items: center; */
   justify-items: center;
+}
+
+.audio-player {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.results {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  width: 90%;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .buttons {
