@@ -4,8 +4,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { usePlaylist } from '../hooks/useServer';
 import '../style/InfiniteList.css';
 
-const InfiniteList = ({ textSearch, onClick, currentTrack, playNext }) => {
+const InfiniteList = ({
+  textSearch,
+  onClick,
+  currentTrack,
+  playNext,
+  playPrev,
+}) => {
   const [nextTrack, setNextTrack] = useState();
+  const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
   const { loading, items, hasMore, error } = usePlaylist(
     pageNumber,
@@ -13,13 +20,26 @@ const InfiniteList = ({ textSearch, onClick, currentTrack, playNext }) => {
   );
 
   useEffect(() => {
-    if (currentTrack) {
+    if (currentTrack >= 0) {
+      const currentEl = document.getElementById(items[currentTrack]._id);
+    }
+  }, [currentTrack]);
+
+  useEffect(() => {
+    if (currentTrack >= 0) {
       setNextTrack(items[currentTrack + 1]._id);
     }
   }, [currentTrack]);
 
   useEffect(() => {
-    if (playNext) {
+    if (currentTrack >= 1) {
+      /* console.log(currentTrack, items[currentTrack - 1]._id); */
+      setPrevTrack(items[currentTrack - 1]._id);
+    }
+  }, [currentTrack]);
+
+  useEffect(() => {
+    if (playNext && nextTrack) {
       const clickNext = new Event('click', {
         bubbles: true,
         cancelable: false,
@@ -28,7 +48,18 @@ const InfiniteList = ({ textSearch, onClick, currentTrack, playNext }) => {
       const nt = document.getElementById(nextTrack);
       nt.dispatchEvent(clickNext);
     }
-  }, [playNext]);
+  }, [playNext, nextTrack]);
+
+  useEffect(() => {
+    if (playPrev && prevTrack) {
+      const clickPrev = new Event('click', {
+        bubbles: true,
+        cancelable: false,
+      });
+      const pt = document.getElementById(prevTrack);
+      pt.dispatchEvent(clickPrev);
+    }
+  }, [playPrev, prevTrack]);
 
   const getKey = () => uuidv4();
 
@@ -64,7 +95,12 @@ const InfiniteList = ({ textSearch, onClick, currentTrack, playNext }) => {
         {items.map((item, index) => {
           if (items.length === index + 1) {
             return (
-              <div className="item" key={getKey()} ref={lastItemElement}>
+              <div
+                className="item"
+                id={item._id}
+                key={getKey()}
+                ref={lastItemElement}
+              >
                 <a href={item._id} id={item._id} val={index} onClick={onClick}>
                   index: {index} --- {item.file}
                 </a>
@@ -72,7 +108,7 @@ const InfiniteList = ({ textSearch, onClick, currentTrack, playNext }) => {
             );
           } else {
             return (
-              <div className="item" key={getKey()}>
+              <div className="item" id={`${item._id}---a-div`} key={getKey()}>
                 <a href={item._id} onClick={onClick} val={index} id={item._id}>
                   index: {index} --- {item.file}
                 </a>

@@ -14,6 +14,7 @@ function App() {
   const [url, setUrl] = useState();
   const [currentTrack, setCurrentTrack] = useState();
   const [playNext, setPlayNext] = useState(false);
+  const [playPrev, setPlayPrev] = useState(false);
   const { metadata, cover } = useMetadata(url);
 
   const audio = new Audio();
@@ -29,9 +30,6 @@ function App() {
 
   useEffect(() => {
     if (currentTime === duration) {
-      /* audioRef.current.src = `http://localhost:3008/tracks/${nextTrack}`;
-      setUrl(`track-metadata/${nextTrack}`);
-      audioRef.current.load(); */
       setPlayNext(true);
     }
   }, [currentTime, duration]);
@@ -61,6 +59,10 @@ function App() {
       case 'v-down':
         if (audioRef.current.volume <= 0) return;
         return (audioRef.current.volume -= 0.1);
+      case 'backward':
+        setPlayPrev(true);
+      case 'forward':
+        setPlayNext(true);
       default:
         return;
     }
@@ -111,11 +113,12 @@ function App() {
     /* console.log('target: ', e.target.id, 'index: ', e.target.attributes.val); */
     e.preventDefault();
     setCurrentTrack(+e.target.getAttribute('val'));
+    setPlayNext(false);
+    setPlayPrev(false);
     setPause(false);
     audioRef.current.src = `http://localhost:3008/tracks/${e.target.id}`;
     setUrl(`track-metadata/${e.target.id}`);
     audioRef.current.load();
-    setPlayNext(false);
   };
 
   const getKey = () => uuidv4();
@@ -243,6 +246,7 @@ function App() {
             onClick={handleListItem}
             currentTrack={currentTrack}
             playNext={playNext}
+            playPrev={playPrev}
           />
         ) : (
           <div className="results">Playlist</div>
