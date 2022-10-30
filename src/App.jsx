@@ -1,16 +1,13 @@
-import { useState, useEffect, useRef, forwardRef } from 'react';
-import axios from 'axios';
-import { FixedSizeList as List } from 'react-window';
+import { useState, useEffect, useRef } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
-import { useMetadata, usePlaylist } from './hooks/useServer';
-import Row from './components/Row';
+import { useMetadata } from './hooks/useServer';
 import InfiniteList from './Components/InfiniteList';
 import './App.css';
 
 function App() {
   const [request, setRequest] = useState(undefined);
-  const [playlist, setPlaylist] = useState();
+  /* const [playlist, setPlaylist] = useState(); */
   const [url, setUrl] = useState();
   const [currentTrack, setCurrentTrack] = useState();
   const [playNext, setPlayNext] = useState(false);
@@ -23,29 +20,11 @@ function App() {
   const [currentTime, setCurrentTime] = useState(0);
   const [pause, setPause] = useState(false);
 
-  const client = axios.create({
-    baseURL: 'http://localhost:3008/',
-    proxy: false,
-  });
-
   useEffect(() => {
     if (currentTime === duration) {
       setPlayNext(true);
     }
   }, [currentTime, duration]);
-
-  useEffect(() => {
-    const getPlaylist = async () => {
-      try {
-        await client.get('/alltracks').then(response => {
-          setPlaylist(response);
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    if (request === 'playlist') getPlaylist();
-  }, [request]);
 
   const handleClick = id => {
     switch (id) {
@@ -83,9 +62,9 @@ function App() {
     };
   }, [audioRef.current]);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     audioRef.current.onvolumechange = () => console.log(audio.volume);
-  }, [audioRef.current]);
+  }, [audioRef.current]); */
 
   useEffect(() => {
     /*  audioRef.current.ontimeupdate = e => setCurrentTime(e.target.currentTime); */
@@ -124,134 +103,130 @@ function App() {
   const getKey = () => uuidv4();
 
   return (
-    <div className="App">
-      <div className="container">
-        <div className="audio-player">
-          <div className="audio-duration">Duration: {duration}</div>
-          <div className="time-elapsed">Elapsed: {currentTime}</div>
-          <div
-            id="v-up"
+    <div className="container">
+      <div className="audio-player">
+        <div className="audio-duration">Duration: {duration}</div>
+        <div className="time-elapsed">Elapsed: {currentTime}</div>
+        <div
+          id="v-up"
+          onClick={e => handleClick(e.target.id)}
+          style={{ cursor: 'pointer' }}
+        >
+          Volume +++
+        </div>
+        <div
+          id="v-down"
+          onClick={e => handleClick(e.target.id)}
+          style={{ cursor: 'pointer' }}
+        >
+          Volume ---
+        </div>
+        <div className="buttons">
+          <button
+            className="btn lg neu"
+            id="like"
             onClick={e => handleClick(e.target.id)}
-            style={{ cursor: 'pointer' }}
           >
-            Volume +++
-          </div>
-          <div
-            id="v-down"
-            onClick={e => handleClick(e.target.id)}
-            style={{ cursor: 'pointer' }}
-          >
-            Volume ---
-          </div>
-          <div className="buttons">
-            <button
-              className="btn lg neu"
+            <i
+              className="fas fa-heart"
+              href="#"
               id="like"
               onClick={e => handleClick(e.target.id)}
+            ></i>
+          </button>
+
+          {pause ? (
+            <button
+              className="btn lg neu"
+              id="pauseplay"
+              onClick={e => handleClick(e.target.id)}
             >
               <i
-                className="fas fa-heart"
+                className="fas fa-play"
                 href="#"
-                id="like"
+                id="pauseplay"
                 onClick={e => handleClick(e.target.id)}
               ></i>
             </button>
-
-            {pause ? (
-              <button
-                className="btn lg neu"
-                id="pauseplay"
-                onClick={e => handleClick(e.target.id)}
-              >
-                <i
-                  className="fas fa-play"
-                  href="#"
-                  id="pauseplay"
-                  onClick={e => handleClick(e.target.id)}
-                ></i>
-              </button>
-            ) : (
-              <button
-                className="btn lg neu"
-                id="pauseplay"
-                onClick={e => handleClick(e.target.id)}
-              >
-                <i
-                  className="fa-solid fa-pause"
-                  href="#"
-                  id="pauseplay"
-                  onClick={e => handleClick(e.target.id)}
-                ></i>
-              </button>
-            )}
+          ) : (
             <button
               className="btn lg neu"
+              id="pauseplay"
+              onClick={e => handleClick(e.target.id)}
+            >
+              <i
+                className="fa-solid fa-pause"
+                href="#"
+                id="pauseplay"
+                onClick={e => handleClick(e.target.id)}
+              ></i>
+            </button>
+          )}
+          <button
+            className="btn lg neu"
+            id="backward"
+            onClick={e => handleClick(e.target.id)}
+          >
+            <i
+              className="fas fa-backward"
+              href="#"
               id="backward"
               onClick={e => handleClick(e.target.id)}
-            >
-              <i
-                className="fas fa-backward"
-                href="#"
-                id="backward"
-                onClick={e => handleClick(e.target.id)}
-              ></i>
-            </button>
+            ></i>
+          </button>
 
-            <button
-              className="btn lg neu"
+          <button
+            className="btn lg neu"
+            id="forward"
+            onClick={e => handleClick(e.target.id)}
+          >
+            <i
+              className="fas fa-forward"
               id="forward"
               onClick={e => handleClick(e.target.id)}
-            >
-              <i
-                className="fas fa-forward"
-                id="forward"
-                onClick={e => handleClick(e.target.id)}
-              ></i>
-            </button>
-            <button
-              className="btn lg neu"
+            ></i>
+          </button>
+          <button
+            className="btn lg neu"
+            id="playlist"
+            onClick={e => handleClick(e.target.id)}
+          >
+            <i
+              className="fa-solid fa-list"
               id="playlist"
               onClick={e => handleClick(e.target.id)}
-            >
-              <i
-                className="fa-solid fa-list"
-                id="playlist"
-                onClick={e => handleClick(e.target.id)}
-              ></i>
-            </button>
-          </div>
-          {metadata ? (
-            <>
-              <div>Artist: {metadata.common.artist}</div>
-              <div>Album: {metadata.common.album}</div>
-              <div>Title: {metadata.common.title}</div>
-            </>
-          ) : null}
-          {cover && cover !== 'no available image' ? (
-            <>
-              <div>
-                <img
-                  src={`data:image/png;base64,${cover}`}
-                  alt=""
-                  style={{ width: '200px', height: '200px' }}
-                />
-              </div>
-            </>
-          ) : (
-            <p>{cover}</p>
-          )}
+            ></i>
+          </button>
         </div>
-        {request === 'playlist' ? (
-          <InfiniteList
-            onClick={handleListItem}
-            currentTrack={currentTrack}
-            playNext={playNext}
-            playPrev={playPrev}
-          />
+        {metadata ? (
+          <>
+            <div>Artist: {metadata.common.artist}</div>
+            <div>Album: {metadata.common.album}</div>
+            <div>Title: {metadata.common.title}</div>
+          </>
+        ) : null}
+        {cover && cover !== 'no available image' ? (
+          <>
+            <div>
+              <img
+                src={`data:image/png;base64,${cover}`}
+                alt=""
+                style={{ width: '200px', height: '200px' }}
+              />
+            </div>
+          </>
         ) : (
-          <div className="results">Playlist</div>
+          <p>{cover}</p>
         )}
       </div>
+      {request === 'playlist' ? (
+        <InfiniteList
+          onClick={handleListItem}
+          currentTrack={currentTrack}
+          playNext={playNext}
+          playPrev={playPrev}
+        />
+      ) : null}
     </div>
   );
 }

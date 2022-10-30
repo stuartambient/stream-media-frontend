@@ -4,3 +4,34 @@
   border-bottom: 5px inset darkgray;
   padding: 0.5rem;
 }
+
+.results {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  width: 90%;
+  margin: 0;
+  overflow-y: scroll;
+  /* overflow-x: hidden; */
+  scroll-behavior: smooth;
+  padding: 0.5rem;
+}
+
+.item {
+  display: flex;
+  background: darkgray;
+  align-items: center;
+  height: 70px;
+  margin: 0.5em;
+  padding: 1em;
+  border-radius: 5px;
+  border-bottom: 5px inset darkgray;
+  padding: 0.5rem;
+}
+
+.itemloading {
+  background: red;
+}
+
+.active {
+  background-color: red;
+}

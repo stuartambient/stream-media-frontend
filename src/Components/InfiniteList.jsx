@@ -14,6 +14,7 @@ const InfiniteList = ({
   const [nextTrack, setNextTrack] = useState();
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
+  const [activeDiv, setActiveDiv] = useState();
   const { loading, items, hasMore, error } = usePlaylist(
     pageNumber,
     textSearch
@@ -21,7 +22,8 @@ const InfiniteList = ({
 
   useEffect(() => {
     if (currentTrack >= 0) {
-      const currentEl = document.getElementById(items[currentTrack]._id);
+      const el = items[currentTrack]._id + '--item-div';
+      setActiveDiv(el);
     }
   }, [currentTrack]);
 
@@ -71,12 +73,13 @@ const InfiniteList = ({
       observer.current = new IntersectionObserver(
         entries => {
           if (entries[0].isIntersecting && hasMore) {
+            /* console.log('entries: ', entries[0].isIntersecting, hasMore); */
             setPageNumber(prevPageNumber => prevPageNumber + 1);
           }
         },
         {
           root: document.querySelector('.results'),
-          rootMargin: '0px 0px 10px 0px',
+          rootMargin: '0px',
           threshold: 1.0,
         }
       );
@@ -85,47 +88,36 @@ const InfiniteList = ({
     [loading, hasMore]
   );
 
+  const trigger = items.length - 2;
+
   return (
     <>
       <div className="results">
-        {loading && <div className="loader-flex">...Loading</div>}
+        {/* {loading && <div className="item itemloading">...Loading</div>} */}
         {!items.length && !loading ? (
           <div className="no-results">No results</div>
         ) : null}
         {items.map((item, index) => {
-          if (items.length === index + 1) {
-            return (
-              <div
-                className="item"
-                id={item._id}
-                key={getKey()}
-                ref={lastItemElement}
-              >
-                <a href={item._id} id={item._id} val={index} onClick={onClick}>
-                  index: {index} --- {item.file}
-                </a>
-              </div>
-            );
-          } else {
-            return (
-              <div className="item" id={`${item._id}---a-div`} key={getKey()}>
-                <a href={item._id} onClick={onClick} val={index} id={item._id}>
-                  index: {index} --- {item.file}
-                </a>
-              </div>
-            );
-          }
-        })}
-        {hasMore && (
-          <>
-            <div className="item itemloading">
-              {loading && items.length ? (
-                <div className="loading">Loading...</div>
-              ) : null}
+          /*       console.log(trigger, index);
+          /* if (items.length === index + 1) */
+          return (
+            <div
+              id={`${item._id}--item-div`}
+              key={getKey()}
+              className={
+                activeDiv === `${item._id}--item-div` ? 'item active' : 'item'
+              }
+              /* ref={items.length === index + 1 ? lastItemElement : null} */
+              ref={trigger ? lastItemElement : null}
+            >
+              <a href={item._id} id={item._id} val={index} onClick={onClick}>
+                index: {index} --- {item.file}
+              </a>
             </div>
-            <div className="item itemerror">{error && 'Error'}</div>
-          </>
-        )}
+          );
+        })}
+
+        {loading && <div className="item itemloading">...Loading</div>}
       </div>
     </>
   );

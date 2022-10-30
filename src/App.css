@@ -20,14 +20,6 @@ body {
   grid-row: 2 / 3;
 }
 
-.results {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  width: 90%;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 .buttons {
   display: flex;
   flex-direction: row;

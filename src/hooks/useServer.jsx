@@ -60,13 +60,19 @@ export const usePlaylist = (pageNumber, textSearch) => {
       method: 'GET',
       url: 'http://localhost:3008/alltracks/',
       params: { page: pageNumber, text: textSearch },
+      /* headers: {
+        'Cache-Control': 'no-cache',
+        'cache-control': 'no-cache',
+        expires: '0',
+        pragma: 'no-cache',
+      }, */
     })
       .then(res => {
         setItems(prevItems => {
           return [...prevItems, ...res.data];
         });
         /* OR GREATER THEN 0 */
-        setHasMore(res.data.length > 1);
+        setHasMore(res.data.length > 0);
         setLoading(false);
       })
       .catch(e => {
@@ -74,5 +80,5 @@ export const usePlaylist = (pageNumber, textSearch) => {
       });
   }, [pageNumber, textSearch]);
 
-  return { loading, items, /* setItems, */ hasMore, error };
+  return { loading, items, hasMore, error };
 };
