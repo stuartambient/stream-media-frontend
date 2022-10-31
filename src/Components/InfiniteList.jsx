@@ -4,21 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { usePlaylist } from '../hooks/useServer';
 import '../style/InfiniteList.css';
 
-const InfiniteList = ({
-  textSearch,
-  onClick,
-  currentTrack,
-  playNext,
-  playPrev,
-}) => {
+const InfiniteList = ({ onClick, currentTrack, playNext, playPrev, test }) => {
   const [nextTrack, setNextTrack] = useState();
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
   const [activeDiv, setActiveDiv] = useState();
-  const { loading, items, hasMore, error } = usePlaylist(
-    pageNumber,
-    textSearch
-  );
+  const { loading, items, hasMore, error } = usePlaylist(pageNumber);
+
+  /*   const next = useRef();
+  const prev = useRef(); */
+
+  console.log(test);
 
   useEffect(() => {
     if (currentTrack >= 0) {
@@ -105,7 +101,11 @@ const InfiniteList = ({
               id={`${item._id}--item-div`}
               key={getKey()}
               className={
-                activeDiv === `${item._id}--item-div` ? 'item active' : 'item'
+                /* activeDiv === `${item._id}--item-div`
+                  ? 'item active'
+                  : 'item' */ `${test}--item-div` === `${item._id}--item-div`
+                  ? 'item active'
+                  : 'item'
               }
               /* ref={items.length === index + 1 ? lastItemElement : null} */
               ref={trigger ? lastItemElement : null}

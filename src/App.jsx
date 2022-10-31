@@ -10,6 +10,7 @@ function App() {
   /* const [playlist, setPlaylist] = useState(); */
   const [url, setUrl] = useState();
   const [currentTrack, setCurrentTrack] = useState();
+  const [test, setTest] = useState();
   const [playNext, setPlayNext] = useState(false);
   const [playPrev, setPlayPrev] = useState(false);
   const { metadata, cover } = useMetadata(url);
@@ -89,9 +90,9 @@ function App() {
   }, [pause, audioRef]);
 
   const handleListItem = async e => {
-    /* console.log('target: ', e.target.id, 'index: ', e.target.attributes.val); */
     e.preventDefault();
     setCurrentTrack(+e.target.getAttribute('val'));
+    setTest(e.target.id);
     setPlayNext(false);
     setPlayPrev(false);
     setPause(false);
@@ -225,6 +226,7 @@ function App() {
           currentTrack={currentTrack}
           playNext={playNext}
           playPrev={playPrev}
+          test={test}
         />
       ) : null}
     </div>

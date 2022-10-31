@@ -47,7 +47,7 @@ export const useMetadata = url => {
   return { metadata, cover };
 };
 
-export const usePlaylist = (pageNumber, textSearch) => {
+export const usePlaylist = pageNumber => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [items, setItems] = useState([]);
@@ -59,7 +59,7 @@ export const usePlaylist = (pageNumber, textSearch) => {
     axios({
       method: 'GET',
       url: 'http://localhost:3008/alltracks/',
-      params: { page: pageNumber, text: textSearch },
+      params: { page: pageNumber },
       /* headers: {
         'Cache-Control': 'no-cache',
         'cache-control': 'no-cache',
@@ -78,7 +78,7 @@ export const usePlaylist = (pageNumber, textSearch) => {
       .catch(e => {
         setError(true);
       });
-  }, [pageNumber, textSearch]);
+  }, [pageNumber]);
 
   return { loading, items, hasMore, error };
 };
