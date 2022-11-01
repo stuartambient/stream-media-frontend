@@ -54,6 +54,7 @@ export const usePlaylist = pageNumber => {
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
+    let ignore = false;
     setLoading(true);
     setError(false);
     axios({
@@ -68,16 +69,21 @@ export const usePlaylist = pageNumber => {
       }, */
     })
       .then(res => {
-        setItems(prevItems => {
-          return [...prevItems, ...res.data];
-        });
-        /* OR GREATER THEN 0 */
-        setHasMore(res.data.length > 0);
-        setLoading(false);
+        if (!ignore) {
+          setItems(prevItems => {
+            return [...prevItems, ...res.data];
+          });
+          /* OR GREATER THEN 0 */
+          setHasMore(res.data.length > 0);
+          setLoading(false);
+        }
       })
       .catch(e => {
         setError(true);
       });
+    return () => {
+      ignore = true;
+    };
   }, [pageNumber]);
 
   return { loading, items, hasMore, error };

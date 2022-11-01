@@ -5,16 +5,15 @@ import { usePlaylist } from '../hooks/useServer';
 import '../style/InfiniteList.css';
 
 const InfiniteList = ({ onClick, currentTrack, playNext, playPrev, test }) => {
-  const [nextTrack, setNextTrack] = useState();
+  const [nextTrack, setNextTrack] = useState(undefined);
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
   const [activeDiv, setActiveDiv] = useState();
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
-  /*   const next = useRef();
-  const prev = useRef(); */
+  /*   items && currentTrack ? setNextTrack(items[currentTrack + 1]) : null; */
 
-  console.log(test);
+  /*  console.log('nt: ', nextTrack); */
 
   useEffect(() => {
     if (currentTrack >= 0) {
@@ -31,7 +30,6 @@ const InfiniteList = ({ onClick, currentTrack, playNext, playPrev, test }) => {
 
   useEffect(() => {
     if (currentTrack >= 1) {
-      /* console.log(currentTrack, items[currentTrack - 1]._id); */
       setPrevTrack(items[currentTrack - 1]._id);
     }
   }, [currentTrack]);

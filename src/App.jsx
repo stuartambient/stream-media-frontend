@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
 import { useMetadata } from './hooks/useServer';
+import { useDuration, useCurrentTime } from './hooks/useTime';
 import InfiniteList from './Components/InfiniteList';
 import './App.css';
 
@@ -52,15 +53,17 @@ function App() {
     audioRef.current.onloadedmetadata = async () => {
       audioRef.current.play();
 
-      const minutes = Math.floor(audioRef.current.duration / 60);
+      setDuration(useDuration(audioRef.current));
+
+      /* const minutes = Math.floor(audioRef.current.duration / 60);
       const seconds = Math.floor(audioRef.current.duration - minutes * 60);
       const currentTime =
         str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
-      setDuration(currentTime);
+      setDuration(currentTime); */
     };
-    const str_pad_left = (string, pad, length) => {
+    /*  const str_pad_left = (string, pad, length) => {
       return (new Array(length + 1).join(pad) + string).slice(-length);
-    };
+    }; */
   }, [audioRef.current]);
 
   /*   useEffect(() => {
@@ -71,17 +74,18 @@ function App() {
     /*  audioRef.current.ontimeupdate = e => setCurrentTime(e.target.currentTime); */
 
     audioRef.current.ontimeupdate = () => {
-      const minutes = Math.floor(audioRef.current.currentTime / 60);
+      /*  const minutes = Math.floor(audioRef.current.currentTime / 60);
       const seconds = Math.floor(audioRef.current.currentTime - minutes * 60);
 
       const currentTime =
         str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
-
-      setCurrentTime(currentTime);
+ */
+      /* setCurrentTime(currentTime); */
+      setCurrentTime(useCurrentTime(audioRef.current));
     };
-    const str_pad_left = (string, pad, length) => {
+    /*    const str_pad_left = (string, pad, length) => {
       return (new Array(length + 1).join(pad) + string).slice(-length);
-    };
+    }; */
   }, [audioRef]);
 
   useEffect(() => {
