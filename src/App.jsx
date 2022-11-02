@@ -11,7 +11,7 @@ function App() {
   /* const [playlist, setPlaylist] = useState(); */
   const [url, setUrl] = useState();
   const [currentTrack, setCurrentTrack] = useState();
-  const [test, setTest] = useState();
+  const [active, setActive] = useState();
   const [playNext, setPlayNext] = useState(false);
   const [playPrev, setPlayPrev] = useState(false);
   const { metadata, cover } = useMetadata(url);
@@ -52,40 +52,14 @@ function App() {
   useEffect(() => {
     audioRef.current.onloadedmetadata = async () => {
       audioRef.current.play();
-
       setDuration(useDuration(audioRef.current));
-
-      /* const minutes = Math.floor(audioRef.current.duration / 60);
-      const seconds = Math.floor(audioRef.current.duration - minutes * 60);
-      const currentTime =
-        str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
-      setDuration(currentTime); */
     };
-    /*  const str_pad_left = (string, pad, length) => {
-      return (new Array(length + 1).join(pad) + string).slice(-length);
-    }; */
   }, [audioRef.current]);
 
-  /*   useEffect(() => {
-    audioRef.current.onvolumechange = () => console.log(audio.volume);
-  }, [audioRef.current]); */
-
   useEffect(() => {
-    /*  audioRef.current.ontimeupdate = e => setCurrentTime(e.target.currentTime); */
-
     audioRef.current.ontimeupdate = () => {
-      /*  const minutes = Math.floor(audioRef.current.currentTime / 60);
-      const seconds = Math.floor(audioRef.current.currentTime - minutes * 60);
-
-      const currentTime =
-        str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
- */
-      /* setCurrentTime(currentTime); */
       setCurrentTime(useCurrentTime(audioRef.current));
     };
-    /*    const str_pad_left = (string, pad, length) => {
-      return (new Array(length + 1).join(pad) + string).slice(-length);
-    }; */
   }, [audioRef]);
 
   useEffect(() => {
@@ -96,7 +70,7 @@ function App() {
   const handleListItem = async e => {
     e.preventDefault();
     setCurrentTrack(+e.target.getAttribute('val'));
-    setTest(e.target.id);
+    setActive(e.target.id);
     setPlayNext(false);
     setPlayPrev(false);
     setPause(false);
@@ -230,7 +204,7 @@ function App() {
           currentTrack={currentTrack}
           playNext={playNext}
           playPrev={playPrev}
-          test={test}
+          active={active}
         />
       ) : null}
     </div>

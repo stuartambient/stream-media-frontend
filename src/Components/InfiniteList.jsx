@@ -1,61 +1,50 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { usePlaylist } from '../hooks/useServer';
 import '../style/InfiniteList.css';
 
-const InfiniteList = ({ onClick, currentTrack, playNext, playPrev, test }) => {
+const InfiniteList = ({
+  onClick,
+  currentTrack,
+  playNext,
+  playPrev,
+  active,
+}) => {
   const [nextTrack, setNextTrack] = useState(undefined);
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
   const [activeDiv, setActiveDiv] = useState();
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
-  /*   items && currentTrack ? setNextTrack(items[currentTrack + 1]) : null; */
-
-  /*  console.log('nt: ', nextTrack); */
-
-  useEffect(() => {
-    if (currentTrack >= 0) {
-      const el = items[currentTrack]._id + '--item-div';
-      setActiveDiv(el);
-    }
-  }, [currentTrack]);
-
-  useEffect(() => {
-    if (currentTrack >= 0) {
+  const trackQueue = useMemo(() => {
+    if (currentTrack >= 0 && items) {
       setNextTrack(items[currentTrack + 1]._id);
     }
-  }, [currentTrack]);
 
-  useEffect(() => {
     if (currentTrack >= 1) {
       setPrevTrack(items[currentTrack - 1]._id);
     }
   }, [currentTrack]);
 
-  useEffect(() => {
-    if (playNext && nextTrack) {
-      const clickNext = new Event('click', {
-        bubbles: true,
-        cancelable: false,
-      });
-      /* items[nextTrack].dispatchEvent(clickEvent); */
-      const nt = document.getElementById(nextTrack);
-      nt.dispatchEvent(clickNext);
-    }
-  }, [playNext, nextTrack]);
+  const handleTrackChange = trackId => {
+    const changeTrack = new Event('click', {
+      bubbles: true,
+      cancelable: false,
+    });
 
-  useEffect(() => {
-    if (playPrev && prevTrack) {
-      const clickPrev = new Event('click', {
-        bubbles: true,
-        cancelable: false,
-      });
-      const pt = document.getElementById(prevTrack);
-      pt.dispatchEvent(clickPrev);
+    const toTrack = document.getElementById(trackId);
+    toTrack.dispatchEvent(changeTrack);
+  };
+
+  const useQueue = useMemo(() => {
+    if (playNext && nextTrack) {
+      handleTrackChange(nextTrack);
     }
-  }, [playPrev, prevTrack]);
+    if (playPrev && prevTrack) {
+      handleTrackChange(prevTrack);
+    }
+  }, [playNext, nextTrack, playPrev, prevTrack]);
 
   const getKey = () => uuidv4();
 
@@ -101,7 +90,7 @@ const InfiniteList = ({ onClick, currentTrack, playNext, playPrev, test }) => {
               className={
                 /* activeDiv === `${item._id}--item-div`
                   ? 'item active'
-                  : 'item' */ `${test}--item-div` === `${item._id}--item-div`
+                  : 'item' */ `${active}--item-div` === `${item._id}--item-div`
                   ? 'item active'
                   : 'item'
               }
