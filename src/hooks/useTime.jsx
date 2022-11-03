@@ -7,7 +7,6 @@ export const useDuration = refcurrent => {
   const seconds = Math.floor(refcurrent.duration - minutes * 60);
   const duration =
     str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
-  /* setDuration(currentTime); */
   return duration;
 };
 
@@ -16,10 +15,24 @@ export const useCurrentTime = refcurrent => {
   const seconds = Math.floor(refcurrent.currentTime - minutes * 60);
   const currentTime =
     str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
-  /* setDuration(currentTime); */
   return currentTime;
 };
 
-/* const str_pad_left = (string, pad, length) => {
-  return (new Array(length + 1).join(pad) + string).slice(-length);
-}; */
+const getProgressBarIncremental = (total, current) => {
+  return current / total;
+};
+
+export const useToSeconds = (duration, currentTime) => {
+  const newDuration = duration.split(':');
+  const durMinutes = newDuration[0] * 60;
+  const durSeconds = newDuration[1];
+  const totalDur = Number(durMinutes) + Number(durSeconds);
+
+  const newCurrentTime = currentTime.split(':');
+  const ctMinutes = newCurrentTime[0] * 60;
+  const ctSeconds = newCurrentTime[1];
+  const totalCt = Number(ctMinutes) + Number(ctSeconds);
+  console.log(totalDur + totalCt);
+
+  return getProgressBarIncremental(totalDur, totalCt);
+};

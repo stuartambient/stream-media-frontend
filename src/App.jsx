@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
 import { useMetadata } from './hooks/useServer';
-import { useDuration, useCurrentTime } from './hooks/useTime';
+import { useDuration, useCurrentTime, useToSeconds } from './hooks/useTime';
 import InfiniteList from './Components/InfiniteList';
 import './App.css';
 
@@ -18,9 +18,14 @@ function App() {
 
   const audio = new Audio();
   const audioRef = useRef(audio);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState('');
+  const [currentTime, setCurrentTime] = useState('');
   const [pause, setPause] = useState(false);
+  const [progbarInc, setProgbarInc] = useState(0);
+  const [seek, setSeek] = useState(false);
+
+  /* const seekBar = useRef(); */
+  const progressBarOutline = useRef();
 
   useEffect(() => {
     if (currentTime === duration) {
@@ -52,6 +57,7 @@ function App() {
   useEffect(() => {
     audioRef.current.onloadedmetadata = async () => {
       audioRef.current.play();
+
       setDuration(useDuration(audioRef.current));
     };
   }, [audioRef.current]);
@@ -67,6 +73,13 @@ function App() {
     if (!pause && url) audioRef.current.play();
   }, [pause, audioRef]);
 
+  useEffect(() => {
+    const outlineWidth = progressBarOutline.current.clientWidth;
+    const convertForProgbar = useToSeconds(duration, currentTime);
+    /* console.log(convertForProgbar * outlineWidth); */
+    setProgbarInc(convertForProgbar * outlineWidth);
+  }, [duration, currentTime]);
+
   const handleListItem = async e => {
     e.preventDefault();
     setCurrentTrack(+e.target.getAttribute('val'));
@@ -77,6 +90,19 @@ function App() {
     audioRef.current.src = `http://localhost:3008/tracks/${e.target.id}`;
     setUrl(`track-metadata/${e.target.id}`);
     audioRef.current.load();
+  };
+
+  const handleSeekTime = e => {
+    console.log(
+      /* 'e.clientX: ',
+      e.clientX,
+      'prog-outline left: ',
+      progressBarOutline.current.getBoundingClientRect().left,
+      'prog-outline scroll width: ',
+      progressBarOutline.current.scrollWidth, */
+      'e.clientX - progressBarOutline: ',
+      e.clientX - progressBarOutline.current.getBoundingClientRect().left
+    );
   };
 
   const getKey = () => uuidv4();
@@ -99,6 +125,22 @@ function App() {
           style={{ cursor: 'pointer' }}
         >
           Volume ---
+        </div>
+        <div
+          className="seekbar-outline"
+          ref={progressBarOutline}
+          onClick={handleSeekTime}
+        >
+          <div
+            className="seekbar"
+            style={{ width: progbarInc ? `${progbarInc}px` : null }}
+          ></div>
+          {/*  <input
+            type="range"
+            min="0"
+            max={audioRef.current.duration}
+            value={audioRef.current.currentTime}
+          ></input> */}
         </div>
         <div className="buttons">
           <button

@@ -20,7 +20,6 @@ export const useMetadata = url => {
     const getTrackMetadata = async () => {
       try {
         await client.get(url).then(res => {
-          console.log(res.data.metadata);
           if (res.data.cover === 'no available image') {
             setCover(res.data.cover);
           } else {

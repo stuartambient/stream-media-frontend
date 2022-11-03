@@ -49,3 +49,20 @@ body {
   box-shadow: inset -5px -5px 15px 0px #ffffff9e,
     inset 5px 5px 15px 0px #a3b1c6a8;
 }
+
+.seekbar-outline {
+  margin-top: 0.5rem;
+  border: 1px solid black;
+  width: 100%;
+}
+
+.seekbar {
+  border-top: 10px solid blue;
+  /* height: 10px; */
+  width: 0;
+  /* margin: 0.5rem 0 0.5rem 0; */
+}
+
+.seekbar-outline:hover {
+  cursor: pointer;
+}
