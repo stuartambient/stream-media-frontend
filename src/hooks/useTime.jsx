@@ -32,7 +32,12 @@ export const useToSeconds = (duration, currentTime) => {
   const ctMinutes = newCurrentTime[0] * 60;
   const ctSeconds = newCurrentTime[1];
   const totalCt = Number(ctMinutes) + Number(ctSeconds);
-  console.log(totalDur + totalCt);
+  /* console.log(totalDur + totalCt); */
 
   return getProgressBarIncremental(totalDur, totalCt);
+};
+
+export const useDurationSeconds = duration => {
+  const splitDuration = duration.split(':');
+  return +splitDuration[0] * 60 + +splitDuration[1];
 };

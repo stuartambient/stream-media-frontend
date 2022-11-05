@@ -2,7 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
 import { useMetadata } from './hooks/useServer';
-import { useDuration, useCurrentTime, useToSeconds } from './hooks/useTime';
+import {
+  useDuration,
+  useDurationSeconds,
+  useCurrentTime,
+  useToSeconds,
+} from './hooks/useTime';
 import InfiniteList from './Components/InfiniteList';
 import './App.css';
 
@@ -25,7 +30,8 @@ function App() {
   const [seek, setSeek] = useState(false);
 
   /* const seekBar = useRef(); */
-  const progressBarOutline = useRef();
+  const seekbarOutline = useRef();
+  const seekbar = useRef();
 
   useEffect(() => {
     if (currentTime === duration) {
@@ -74,7 +80,7 @@ function App() {
   }, [pause, audioRef]);
 
   useEffect(() => {
-    const outlineWidth = progressBarOutline.current.clientWidth;
+    const outlineWidth = seekbarOutline.current.clientWidth;
     const convertForProgbar = useToSeconds(duration, currentTime);
     /* console.log(convertForProgbar * outlineWidth); */
     setProgbarInc(convertForProgbar * outlineWidth);
@@ -93,16 +99,14 @@ function App() {
   };
 
   const handleSeekTime = e => {
-    console.log(
-      /* 'e.clientX: ',
-      e.clientX,
-      'prog-outline left: ',
-      progressBarOutline.current.getBoundingClientRect().left,
-      'prog-outline scroll width: ',
-      progressBarOutline.current.scrollWidth, */
-      'e.clientX - progressBarOutline: ',
-      e.clientX - progressBarOutline.current.getBoundingClientRect().left
-    );
+    const totaltime = useDurationSeconds(duration);
+    /* const seekbar = document.querySelector('.seekbar'); */
+    const seekbarOutlineWidth = seekbarOutline.current.clientWidth;
+    const seekPoint =
+      e.clientX - seekbarOutline.current.getBoundingClientRect().left;
+
+    audioRef.current.currentTime =
+      (totaltime / seekbarOutlineWidth) * seekPoint;
   };
 
   const getKey = () => uuidv4();
@@ -128,7 +132,7 @@ function App() {
         </div>
         <div
           className="seekbar-outline"
-          ref={progressBarOutline}
+          ref={seekbarOutline}
           onClick={handleSeekTime}
         >
           <div

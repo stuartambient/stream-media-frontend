@@ -18,6 +18,8 @@ const InfiniteList = ({
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
   const trackQueue = useMemo(() => {
+    if (!items[currentTrack + 1])
+      return; /* setPageNumber(prev => (prev += 1)); */
     if (currentTrack >= 0 && items) {
       setNextTrack(items[currentTrack + 1]._id);
     }
@@ -36,7 +38,7 @@ const InfiniteList = ({
     const toTrack = document.getElementById(trackId);
     toTrack.dispatchEvent(changeTrack);
   };
-
+  /* Cannot update a component (`App`) while rendering a different component (`InfiniteList`). */
   const useQueue = useMemo(() => {
     if (playNext && nextTrack) {
       handleTrackChange(nextTrack);
