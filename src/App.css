@@ -50,13 +50,15 @@ body {
     inset 5px 5px 15px 0px #a3b1c6a8;
 }
 
-.seekbar-outline {
+.seekbar-outline,
+.volume-outline {
   margin-top: 0.5rem;
   border: 1px solid black;
   width: 100%;
 }
 
-.seekbar {
+.seekbar,
+.volumebar {
   border-top: 10px solid blue;
   /* height: 10px; */
   width: 0;

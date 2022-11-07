@@ -15,11 +15,11 @@ const InfiniteList = ({
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
   const [activeDiv, setActiveDiv] = useState();
+  const [loadNextPage, setLoadNextPage] = useState(false);
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
   const trackQueue = useMemo(() => {
-    if (!items[currentTrack + 1])
-      return; /* setPageNumber(prev => (prev += 1)); */
+    if (!items[currentTrack + 1]) return;
     if (currentTrack >= 0 && items) {
       setNextTrack(items[currentTrack + 1]._id);
     }
@@ -73,7 +73,7 @@ const InfiniteList = ({
     [loading, hasMore]
   );
 
-  const trigger = items.length - 2;
+  const trigger = items.length - 1;
 
   return (
     <>

@@ -33,13 +33,15 @@ function App() {
   const seekbarOutline = useRef();
   const seekbar = useRef();
 
-  useEffect(() => {
+  /*   useEffect(() => {
     if (currentTime === duration) {
+      console.log('ooop');
       setPlayNext(true);
     }
-  }, [currentTime, duration]);
+  }, [currentTime, duration]); */
 
   const handleClick = id => {
+    console.log('id: ', id);
     switch (id) {
       case 'playlist':
         setRequest('playlist');
@@ -52,9 +54,11 @@ function App() {
         if (audioRef.current.volume <= 0) return;
         return (audioRef.current.volume -= 0.1);
       case 'backward':
-        setPlayPrev(true);
+        if (playNext) setPlayNext(false);
+        return setPlayPrev(true);
       case 'forward':
-        setPlayNext(true);
+        if (playPrev) setPlayPrev(false);
+        return setPlayNext(true);
       default:
         return;
     }
@@ -71,6 +75,12 @@ function App() {
   useEffect(() => {
     audioRef.current.ontimeupdate = () => {
       setCurrentTime(useCurrentTime(audioRef.current));
+    };
+  }, [audioRef]);
+
+  useEffect(() => {
+    audioRef.current.onended = () => {
+      setPlayNext(true);
     };
   }, [audioRef]);
 
@@ -114,8 +124,34 @@ function App() {
   return (
     <div className="container">
       <div className="audio-player">
-        <div className="audio-duration">Duration: {duration}</div>
-        <div className="time-elapsed">Elapsed: {currentTime}</div>
+        {cover && cover !== 'no available image' ? (
+          <>
+            <div>
+              <img
+                src={cover}
+                alt=""
+                style={{ width: '200px', height: '200px' }}
+              />
+            </div>
+          </>
+        ) : (
+          <p>{cover}</p>
+        )}
+        <div className="track-info">
+          Duration: {duration} Elapsed: {currentTime}
+          <div className="metadata">
+            {metadata ? (
+              <>
+                <div>Artist: {metadata.common.artist}</div>
+                <div>Album: {metadata.common.album}</div>
+                <div>Title: {metadata.common.title}</div>
+              </>
+            ) : null}
+          </div>
+        </div>
+        <div className="volume-outline">
+          <div className="volumebar" style={{ width: '100%' }}></div>
+        </div>
         <div
           id="v-up"
           onClick={e => handleClick(e.target.id)}
@@ -223,26 +259,6 @@ function App() {
             ></i>
           </button>
         </div>
-        {metadata ? (
-          <>
-            <div>Artist: {metadata.common.artist}</div>
-            <div>Album: {metadata.common.album}</div>
-            <div>Title: {metadata.common.title}</div>
-          </>
-        ) : null}
-        {cover && cover !== 'no available image' ? (
-          <>
-            <div>
-              <img
-                src={`data:image/png;base64,${cover}`}
-                alt=""
-                style={{ width: '200px', height: '200px' }}
-              />
-            </div>
-          </>
-        ) : (
-          <p>{cover}</p>
-        )}
       </div>
       {request === 'playlist' ? (
         <InfiniteList

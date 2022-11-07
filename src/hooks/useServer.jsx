@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Buffer } from 'buffer';
 
 const client = axios.create({
   baseURL: 'http://localhost:3008/',
@@ -10,12 +11,6 @@ export const useMetadata = url => {
   const [metadata, setMetadata] = useState();
   const [cover, setCover] = useState(undefined);
 
-  /*  const config = {
-    headers: {
-      'Content-Type': 'audio/mpeg',
-    },
-  }; */
-
   useEffect(() => {
     const getTrackMetadata = async () => {
       try {
@@ -23,11 +18,11 @@ export const useMetadata = url => {
           if (res.data.cover === 'no available image') {
             setCover(res.data.cover);
           } else {
-            setCover(
-              btoa(
-                String.fromCharCode(...new Uint8Array(res.data.cover.data.data))
-              )
+            const format = res.data.cover.format;
+            const buffer = Buffer.from(res.data.cover.data.data).toString(
+              'base64'
             );
+            setCover(`data:${format};base64,${buffer}`);
           }
 
           if (!res.data.metadata) {
