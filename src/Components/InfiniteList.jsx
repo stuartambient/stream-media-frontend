@@ -15,7 +15,8 @@ const InfiniteList = ({
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
   const [activeDiv, setActiveDiv] = useState();
-  const [loadNextPage, setLoadNextPage] = useState(false);
+  /*  const [loadNextPage, setLoadNextPage] = useState(false); */
+  const [textSearch, setTextSearch] = useState('');
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
   const trackQueue = useMemo(() => {
@@ -28,6 +29,10 @@ const InfiniteList = ({
       setPrevTrack(items[currentTrack - 1]._id);
     }
   }, [currentTrack]);
+
+  const handleTextSearch = e => {
+    setTextSearch(e.target.value);
+  };
 
   const handleTrackChange = trackId => {
     const changeTrack = new Event('click', {
@@ -49,6 +54,12 @@ const InfiniteList = ({
   }, [playNext, nextTrack, playPrev, prevTrack]);
 
   const getKey = () => uuidv4();
+
+  const scroll2View = useRef();
+
+  const scrollCallback = () => {
+    scroll2View.current.scrollIntoView();
+  };
 
   const observer = useRef();
   const lastItemElement = useCallback(
@@ -77,6 +88,9 @@ const InfiniteList = ({
 
   return (
     <>
+      <div className="textsearch">
+        <input type="text" value={textSearch} onChange={handleTextSearch} />
+      </div>
       <div className="results">
         {/* {loading && <div className="item itemloading">...Loading</div>} */}
         {!items.length && !loading ? (
@@ -86,22 +100,24 @@ const InfiniteList = ({
           /*       console.log(trigger, index);
           /* if (items.length === index + 1) */
           return (
-            <div
-              id={`${item._id}--item-div`}
-              key={getKey()}
-              className={
-                /* activeDiv === `${item._id}--item-div`
+            <div scrollCallback={scrollCallback}>
+              <div
+                id={`${item._id}--item-div`}
+                key={getKey()}
+                className={
+                  /* activeDiv === `${item._id}--item-div`
                   ? 'item active'
                   : 'item' */ `${active}--item-div` === `${item._id}--item-div`
-                  ? 'item active'
-                  : 'item'
-              }
-              /* ref={items.length === index + 1 ? lastItemElement : null} */
-              ref={trigger ? lastItemElement : null}
-            >
-              <a href={item._id} id={item._id} val={index} onClick={onClick}>
-                index: {index} --- {item.file}
-              </a>
+                    ? 'item active'
+                    : 'item'
+                }
+                /* ref={items.length === index + 1 ? lastItemElement : null} */
+                ref={trigger ? lastItemElement : scroll2View}
+              >
+                <a href={item._id} id={item._id} val={index} onClick={onClick}>
+                  index: {index} --- {item.file}
+                </a>
+              </div>
             </div>
           );
         })}

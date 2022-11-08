@@ -16,6 +16,13 @@
   padding: 0.5rem;
 }
 
+.textsearch {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  justify-self: center;
+  align-self: center;
+}
+
 .item {
   display: flex;
   background: darkgray;

@@ -130,7 +130,7 @@ function App() {
               <img
                 src={cover}
                 alt=""
-                style={{ width: '200px', height: '200px' }}
+                style={{ width: '250px', height: '250px' }}
               />
             </div>
           </>
