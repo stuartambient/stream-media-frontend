@@ -55,12 +55,6 @@ const InfiniteList = ({
 
   const getKey = () => uuidv4();
 
-  const scroll2View = useRef();
-
-  const scrollCallback = () => {
-    scroll2View.current.scrollIntoView();
-  };
-
   const observer = useRef();
   const lastItemElement = useCallback(
     node => {
@@ -84,7 +78,21 @@ const InfiniteList = ({
     [loading, hasMore]
   );
 
-  const trigger = items.length - 1;
+  const scrollRef = useRef();
+
+  const scrollToView = useCallback(
+    node => {
+      if (!node) return;
+      if (active && node && node.getAttribute('id') === `${active}--item-div`) {
+        scrollRef.current = node;
+        scrollRef.current.scrollIntoView();
+      }
+      /*       if (active) {
+        console.log(activeRef);
+      } */
+    },
+    [active, scrollRef]
+  );
 
   return (
     <>
@@ -100,24 +108,20 @@ const InfiniteList = ({
           /*       console.log(trigger, index);
           /* if (items.length === index + 1) */
           return (
-            <div scrollCallback={scrollCallback}>
-              <div
-                id={`${item._id}--item-div`}
-                key={getKey()}
-                className={
-                  /* activeDiv === `${item._id}--item-div`
+            <div
+              key={getKey()}
+              id={`${item._id}--item-div`}
+              /* key={getKey()} */
+              className={
+                `${active}--item-div` === `${item._id}--item-div`
                   ? 'item active'
-                  : 'item' */ `${active}--item-div` === `${item._id}--item-div`
-                    ? 'item active'
-                    : 'item'
-                }
-                /* ref={items.length === index + 1 ? lastItemElement : null} */
-                ref={trigger ? lastItemElement : scroll2View}
-              >
-                <a href={item._id} id={item._id} val={index} onClick={onClick}>
-                  index: {index} --- {item.file}
-                </a>
-              </div>
+                  : 'item'
+              }
+              ref={items.length === index + 1 ? lastItemElement : scrollToView}
+            >
+              <a href={item._id} id={item._id} val={index} onClick={onClick}>
+                index: {index} --- {item.file}
+              </a>
             </div>
           );
         })}
