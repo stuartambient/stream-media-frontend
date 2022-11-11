@@ -4,6 +4,7 @@ body {
   background: #e0e5ec;
   background: slategray;
   font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
 }
 
 .container {

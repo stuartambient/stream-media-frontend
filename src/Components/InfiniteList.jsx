@@ -1,5 +1,10 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect /* , useMemo */,
+} from 'react';
+/* import axios from 'axios'; */
 import { v4 as uuidv4 } from 'uuid';
 import { usePlaylist } from '../hooks/useServer';
 import '../style/InfiniteList.css';
@@ -14,12 +19,12 @@ const InfiniteList = ({
   const [nextTrack, setNextTrack] = useState(undefined);
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
-  const [activeDiv, setActiveDiv] = useState();
+  /* const [activeDiv, setActiveDiv] = useState(); */
   /*  const [loadNextPage, setLoadNextPage] = useState(false); */
   const [textSearch, setTextSearch] = useState('');
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
-  const trackQueue = useMemo(() => {
+  useEffect(() => {
     if (!items[currentTrack + 1]) return;
     if (currentTrack >= 0 && items) {
       setNextTrack(items[currentTrack + 1]._id);
@@ -28,7 +33,16 @@ const InfiniteList = ({
     if (currentTrack >= 1) {
       setPrevTrack(items[currentTrack - 1]._id);
     }
-  }, [currentTrack]);
+  }, [currentTrack, items]);
+
+  useEffect(() => {
+    if (playNext && nextTrack) {
+      handleTrackChange(nextTrack);
+    }
+    if (playPrev && prevTrack) {
+      handleTrackChange(prevTrack);
+    }
+  }, [playNext, nextTrack, playPrev, prevTrack]);
 
   const handleTextSearch = e => {
     setTextSearch(e.target.value);
@@ -44,14 +58,6 @@ const InfiniteList = ({
     toTrack.dispatchEvent(changeTrack);
   };
   /* Cannot update a component (`App`) while rendering a different component (`InfiniteList`). */
-  const useQueue = useMemo(() => {
-    if (playNext && nextTrack) {
-      handleTrackChange(nextTrack);
-    }
-    if (playPrev && prevTrack) {
-      handleTrackChange(prevTrack);
-    }
-  }, [playNext, nextTrack, playPrev, prevTrack]);
 
   const getKey = () => uuidv4();
 

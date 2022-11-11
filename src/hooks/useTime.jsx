@@ -2,7 +2,7 @@ const str_pad_left = (string, pad, length) => {
   return (new Array(length + 1).join(pad) + string).slice(-length);
 };
 
-export const useDuration = refcurrent => {
+export const convertDuration = refcurrent => {
   const minutes = Math.floor(refcurrent.duration / 60);
   const seconds = Math.floor(refcurrent.duration - minutes * 60);
   const duration =
@@ -10,7 +10,7 @@ export const useDuration = refcurrent => {
   return duration;
 };
 
-export const useCurrentTime = refcurrent => {
+export const convertCurrentTime = refcurrent => {
   const minutes = Math.floor(refcurrent.currentTime / 60);
   const seconds = Math.floor(refcurrent.currentTime - minutes * 60);
   const currentTime =
@@ -22,7 +22,7 @@ const getProgressBarIncremental = (total, current) => {
   return current / total;
 };
 
-export const useToSeconds = (duration, currentTime) => {
+export const convertToSeconds = (duration, currentTime) => {
   const newDuration = duration.split(':');
   const durMinutes = newDuration[0] * 60;
   const durSeconds = newDuration[1];
@@ -37,7 +37,7 @@ export const useToSeconds = (duration, currentTime) => {
   return getProgressBarIncremental(totalDur, totalCt);
 };
 
-export const useDurationSeconds = duration => {
+export const convertDurationSeconds = duration => {
   const splitDuration = duration.split(':');
   return +splitDuration[0] * 60 + +splitDuration[1];
 };

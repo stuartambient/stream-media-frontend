@@ -3,10 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useMetadata } from './hooks/useServer';
 import {
-  useDuration,
-  useDurationSeconds,
-  useCurrentTime,
-  useToSeconds,
+  convertDuration,
+  convertDurationSeconds,
+  convertCurrentTime,
+  convertToSeconds,
 } from './hooks/useTime';
 import InfiniteList from './Components/InfiniteList';
 import './App.css';
@@ -27,26 +27,20 @@ function App() {
   const [currentTime, setCurrentTime] = useState('');
   const [pause, setPause] = useState(false);
   const [progbarInc, setProgbarInc] = useState(0);
-  const [seek, setSeek] = useState(false);
 
-  /* const seekBar = useRef(); */
   const seekbarOutline = useRef();
-  const seekbar = useRef();
-
-  /*   useEffect(() => {
-    if (currentTime === duration) {
-      console.log('ooop');
-      setPlayNext(true);
-    }
-  }, [currentTime, duration]); */
+  const volumebarOutline = useRef();
+  const volumeslider = useRef();
 
   const handleClick = id => {
     console.log('id: ', id);
     switch (id) {
       case 'playlist':
         setRequest('playlist');
+        break;
       case 'pauseplay':
         setPause(() => !pause);
+        break;
       case 'v-up':
         if (audioRef.current.volume >= 1.0) return;
         return (audioRef.current.volume += 0.1);
@@ -68,13 +62,13 @@ function App() {
     audioRef.current.onloadedmetadata = async () => {
       audioRef.current.play();
 
-      setDuration(useDuration(audioRef.current));
+      setDuration(convertDuration(audioRef.current));
     };
-  }, [audioRef.current]);
+  });
 
   useEffect(() => {
     audioRef.current.ontimeupdate = () => {
-      setCurrentTime(useCurrentTime(audioRef.current));
+      setCurrentTime(convertCurrentTime(audioRef.current));
     };
   }, [audioRef]);
 
@@ -87,11 +81,11 @@ function App() {
   useEffect(() => {
     if (pause) audioRef.current.pause();
     if (!pause && url) audioRef.current.play();
-  }, [pause, audioRef]);
+  }, [pause, audioRef, url]);
 
   useEffect(() => {
     const outlineWidth = seekbarOutline.current.clientWidth;
-    const convertForProgbar = useToSeconds(duration, currentTime);
+    const convertForProgbar = convertToSeconds(duration, currentTime);
     /* console.log(convertForProgbar * outlineWidth); */
     setProgbarInc(convertForProgbar * outlineWidth);
   }, [duration, currentTime]);
@@ -109,7 +103,8 @@ function App() {
   };
 
   const handleSeekTime = e => {
-    const totaltime = useDurationSeconds(duration);
+    console.log(e.buttons);
+    const totaltime = convertDurationSeconds(duration);
     /* const seekbar = document.querySelector('.seekbar'); */
     const seekbarOutlineWidth = seekbarOutline.current.clientWidth;
     const seekPoint =
@@ -119,7 +114,22 @@ function App() {
       (totaltime / seekbarOutlineWidth) * seekPoint;
   };
 
-  const getKey = () => uuidv4();
+  const handleVolume = e => {
+    if (e.buttons !== 1) return;
+
+    const outlineRect = volumebarOutline.current.getBoundingClientRect();
+    const outlineWidth = Math.round(outlineRect.width);
+    const widthRange = e.clientX - volumebarOutline.current.offsetLeft;
+
+    if (widthRange > 0 || widthRange <= outlineWidth) {
+      const mark = widthRange / outlineWidth;
+      console.log(Math.round(mark * 10) / 10);
+
+      volumeslider.current.setAttribute('style', `width:${widthRange}px`);
+    } else {
+      return;
+    }
+  };
 
   return (
     <div className="container">
@@ -149,8 +159,16 @@ function App() {
             ) : null}
           </div>
         </div>
-        <div className="volume-outline">
-          <div className="volumebar" style={{ width: '100%' }}></div>
+        <div
+          className="volume-outline"
+          onMouseMove={handleVolume}
+          ref={volumebarOutline}
+        >
+          <div
+            className="volumebar"
+            style={{ width: '100%' }}
+            ref={volumeslider}
+          ></div>
         </div>
         <div
           id="v-up"
