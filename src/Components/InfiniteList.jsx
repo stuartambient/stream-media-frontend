@@ -24,6 +24,8 @@ const InfiniteList = ({
   const [textSearch, setTextSearch] = useState('');
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
+  const scrollRef = useRef();
+
   useEffect(() => {
     if (!items[currentTrack + 1]) return;
     if (currentTrack >= 0 && items) {
@@ -59,6 +61,9 @@ const InfiniteList = ({
   };
   /* Cannot update a component (`App`) while rendering a different component (`InfiniteList`). */
 
+  const handleListScroll = e => {
+    /* console.log(scrollRef.current); */
+  };
   const getKey = () => uuidv4();
 
   const observer = useRef();
@@ -84,8 +89,6 @@ const InfiniteList = ({
     [loading, hasMore]
   );
 
-  const scrollRef = useRef();
-
   const scrollToView = useCallback(
     node => {
       if (!node) return;
@@ -105,7 +108,7 @@ const InfiniteList = ({
       <div className="textsearch">
         <input type="text" value={textSearch} onChange={handleTextSearch} />
       </div>
-      <div className="results">
+      <div className="results" onScroll={handleListScroll}>
         {/* {loading && <div className="item itemloading">...Loading</div>} */}
         {!items.length && !loading ? (
           <div className="no-results">No results</div>

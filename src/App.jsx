@@ -27,6 +27,8 @@ function App() {
   const [currentTime, setCurrentTime] = useState('');
   const [pause, setPause] = useState(false);
   const [progbarInc, setProgbarInc] = useState(0);
+  const [currentVolume, setCurrentVolume] = useState(1.0);
+  const [volumebarWidth, setVolumebarWidth] = useState();
 
   const seekbarOutline = useRef();
   const volumebarOutline = useRef();
@@ -41,12 +43,6 @@ function App() {
       case 'pauseplay':
         setPause(() => !pause);
         break;
-      case 'v-up':
-        if (audioRef.current.volume >= 1.0) return;
-        return (audioRef.current.volume += 0.1);
-      case 'v-down':
-        if (audioRef.current.volume <= 0) return;
-        return (audioRef.current.volume -= 0.1);
       case 'backward':
         if (playNext) setPlayNext(false);
         return setPlayPrev(true);
@@ -92,7 +88,9 @@ function App() {
 
   const handleListItem = async e => {
     e.preventDefault();
+    setCurrentVolume(audioRef.current.volume);
     setCurrentTrack(+e.target.getAttribute('val'));
+    audioRef.current.volume = currentVolume;
     setActive(e.target.id);
     setPlayNext(false);
     setPlayPrev(false);
@@ -103,7 +101,7 @@ function App() {
   };
 
   const handleSeekTime = e => {
-    console.log(e.buttons);
+    if (e.buttons !== 1) console.log(e.buttons !== 1);
     const totaltime = convertDurationSeconds(duration);
     /* const seekbar = document.querySelector('.seekbar'); */
     const seekbarOutlineWidth = seekbarOutline.current.clientWidth;
@@ -121,9 +119,9 @@ function App() {
     const outlineWidth = Math.round(outlineRect.width);
     const widthRange = e.clientX - volumebarOutline.current.offsetLeft;
 
-    if (widthRange > 0 || widthRange <= outlineWidth) {
+    if (widthRange > 0 || widthRange < outlineWidth) {
       const mark = widthRange / outlineWidth;
-      console.log(Math.round(mark * 10) / 10);
+      audioRef.current.volume = Math.round(mark * 10) / 10;
 
       volumeslider.current.setAttribute('style', `width:${widthRange}px`);
     } else {
@@ -164,26 +162,9 @@ function App() {
           onMouseMove={handleVolume}
           ref={volumebarOutline}
         >
-          <div
-            className="volumebar"
-            style={{ width: '100%' }}
-            ref={volumeslider}
-          ></div>
+          <div className="volumebar" ref={volumeslider}></div>
         </div>
-        <div
-          id="v-up"
-          onClick={e => handleClick(e.target.id)}
-          style={{ cursor: 'pointer' }}
-        >
-          Volume +++
-        </div>
-        <div
-          id="v-down"
-          onClick={e => handleClick(e.target.id)}
-          style={{ cursor: 'pointer' }}
-        >
-          Volume ---
-        </div>
+
         <div
           className="seekbar-outline"
           ref={seekbarOutline}
