@@ -128,9 +128,15 @@ const InfiniteList = ({
               }
               ref={items.length === index + 1 ? lastItemElement : scrollToView}
             >
-              <a href={item._id} id={item._id} val={index} onClick={onClick}>
-                index: {index} --- {item.file}
-              </a>
+              {item.artist && item.title && item.album ? (
+                <a href={item._id} id={item._id} val={index} onClick={onClick}>
+                  Artist:{item.artist} Title:{item.title} Album:{item.album}>
+                </a>
+              ) : (
+                <a href={item._id} id={item._id} val={index} onClick={onClick}>
+                  {item.file}
+                </a>
+              )}
             </div>
           );
         })}

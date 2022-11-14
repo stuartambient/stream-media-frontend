@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
+import { GiPauseButton, GiPlayButton } from 'react-icons/gi';
+import { FaForward, FaBackward, FaListUl, FaHeart } from 'react-icons/fa';
 import { useMetadata } from './hooks/useServer';
 import {
   convertDuration,
@@ -12,7 +14,7 @@ import InfiniteList from './Components/InfiniteList';
 import './App.css';
 
 function App() {
-  const [request, setRequest] = useState(undefined);
+  const [request, setRequest] = useState(false);
   /* const [playlist, setPlaylist] = useState(); */
   const [url, setUrl] = useState();
   const [currentTrack, setCurrentTrack] = useState();
@@ -34,11 +36,13 @@ function App() {
   const volumebarOutline = useRef();
   const volumeslider = useRef();
 
-  const handleClick = id => {
-    console.log('id: ', id);
+  const handleClick = e => {
+    let id;
+
+    e.target.id ? (id = e.target.id) : (id = e.target.parentNode.id);
     switch (id) {
       case 'playlist':
-        setRequest('playlist');
+        setRequest(() => !request);
         break;
       case 'pauseplay':
         setPause(() => !pause);
@@ -135,11 +139,7 @@ function App() {
         {cover && cover !== 'no available image' ? (
           <>
             <div>
-              <img
-                src={cover}
-                alt=""
-                style={{ width: '250px', height: '250px' }}
-              />
+              <img src={cover} alt="" />
             </div>
           </>
         ) : (
@@ -181,85 +181,33 @@ function App() {
             value={audioRef.current.currentTime}
           ></input> */}
         </div>
-        <div className="buttons">
-          <button
-            className="btn lg neu"
-            id="like"
-            onClick={e => handleClick(e.target.id)}
-          >
-            <i
-              className="fas fa-heart"
-              href="#"
-              id="like"
-              onClick={e => handleClick(e.target.id)}
-            ></i>
-          </button>
+        <ul className="controls">
+          <li className="btn" id="like" onClick={e => handleClick(e)}>
+            <FaHeart id="like" className="icon" />
+          </li>
 
           {pause ? (
-            <button
-              className="btn lg neu"
-              id="pauseplay"
-              onClick={e => handleClick(e.target.id)}
-            >
-              <i
-                className="fas fa-play"
-                href="#"
-                id="pauseplay"
-                onClick={e => handleClick(e.target.id)}
-              ></i>
-            </button>
+            <li className="btn" id="pauseplay" onClick={e => handleClick(e)}>
+              <GiPlayButton id="pauseplay" className="icon" />
+            </li>
           ) : (
-            <button
-              className="btn lg neu"
-              id="pauseplay"
-              onClick={e => handleClick(e.target.id)}
-            >
-              <i
-                className="fa-solid fa-pause"
-                href="#"
-                id="pauseplay"
-                onClick={e => handleClick(e.target.id)}
-              ></i>
-            </button>
+            <li className="btn" id="pauseplay" onClick={e => handleClick(e)}>
+              <GiPauseButton id="pauseplay" className="icon" />
+            </li>
           )}
-          <button
-            className="btn lg neu"
-            id="backward"
-            onClick={e => handleClick(e.target.id)}
-          >
-            <i
-              className="fas fa-backward"
-              href="#"
-              id="backward"
-              onClick={e => handleClick(e.target.id)}
-            ></i>
-          </button>
+          <li className="btn" id="backward" onClick={e => handleClick(e)}>
+            <FaBackward id="backward" className="icon" />
+          </li>
 
-          <button
-            className="btn lg neu"
-            id="forward"
-            onClick={e => handleClick(e.target.id)}
-          >
-            <i
-              className="fas fa-forward"
-              id="forward"
-              onClick={e => handleClick(e.target.id)}
-            ></i>
-          </button>
-          <button
-            className="btn lg neu"
-            id="playlist"
-            onClick={e => handleClick(e.target.id)}
-          >
-            <i
-              className="fa-solid fa-list"
-              id="playlist"
-              onClick={e => handleClick(e.target.id)}
-            ></i>
-          </button>
-        </div>
+          <li className="btn" id="forward" onClick={e => handleClick(e)}>
+            <FaForward id="forward" className="icon" />
+          </li>
+          <li className="btn" id="playlist" onClick={e => handleClick(e)}>
+            <FaListUl id="playlist" className="icon" />
+          </li>
+        </ul>
       </div>
-      {request === 'playlist' ? (
+      {request ? (
         <InfiniteList
           onClick={handleListItem}
           currentTrack={currentTrack}
