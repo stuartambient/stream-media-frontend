@@ -136,33 +136,50 @@ function App() {
   return (
     <div className="container">
       <div className="audio-player">
+        <div className="title">
+          {metadata ? <>{metadata.common.title.slice(0, 20)}</> : null}
+        </div>
+
         {cover && cover !== 'no available image' ? (
           <>
-            <div>
+            <div className="image">
               <img src={cover} alt="" />
             </div>
           </>
         ) : (
           <p>{cover}</p>
         )}
-        <div className="track-info">
-          Duration: {duration} Elapsed: {currentTime}
-          <div className="metadata">
-            {metadata ? (
-              <>
-                <div>Artist: {metadata.common.artist}</div>
-                <div>Album: {metadata.common.album}</div>
-                <div>Title: {metadata.common.title}</div>
-              </>
-            ) : null}
-          </div>
+        <div className="metadata">
+          {metadata ? (
+            <>
+              <div>
+                <span className="label">Artist: </span>
+                <span className="real-time">
+                  {metadata.common.artist.slice(0, 25)}
+                </span>
+              </div>
+              <div>
+                <span className="label">Album: </span>
+                <span className="real-time">
+                  {metadata.common.album.slice(0, 25)}
+                </span>{' '}
+              </div>
+            </>
+          ) : null}
         </div>
+
         <div
           className="volume-outline"
           onMouseMove={handleVolume}
           ref={volumebarOutline}
         >
           <div className="volumebar" ref={volumeslider}></div>
+        </div>
+        <div className="time">
+          <span className="label">Duration: </span>
+          <span className="real-time">{duration}</span>
+          <span className="label">Elapsed: </span>
+          <span className="real-time">{currentTime}</span>
         </div>
 
         <div
@@ -174,12 +191,6 @@ function App() {
             className="seekbar"
             style={{ width: progbarInc ? `${progbarInc}px` : null }}
           ></div>
-          {/*  <input
-            type="range"
-            min="0"
-            max={audioRef.current.duration}
-            value={audioRef.current.currentTime}
-          ></input> */}
         </div>
         <ul className="controls">
           <li className="btn" id="like" onClick={e => handleClick(e)}>
@@ -221,3 +232,15 @@ function App() {
 }
 
 export default App;
+
+/*
+
+200
+
+
+100px
+
+
+
+
+*/

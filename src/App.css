@@ -1,3 +1,10 @@
+:root {
+  --blue1: #26b0ff;
+  --blue2: #2686ff;
+  --blue3: #265bff;
+  --blue4: #2630ff;
+}
+
 body {
   padding: 0;
   margin: 0;
@@ -28,14 +35,16 @@ body {
   /*  width: 300px;
   height: 600px; */
   /* justify-self: end; */
-  grid-template-rows: 250px repeat(4, auto);
+  grid-template-rows: auto 200px repeat(5, auto);
   grid-template-columns: 300px;
   /* padding: 1rem; */
 
   grid-template-areas:
+    'title'
     'image'
     'meta'
     'volumebar'
+    'time'
     'seekbar'
     'controls';
 
@@ -45,7 +54,6 @@ body {
   border-radius: 10px;
   justify-items: center;
   align-items: center;
-  box-shadow: 2px 2px darkgray;
 }
 @media screen and (max-width: 600px) {
   .container {
@@ -57,14 +65,13 @@ body {
     grid-row: 3 / 4;
   }
 }
-.audio-player img {
+.image {
   grid-area: image;
-  width: 200px;
-  height: 200px;
 }
 
-.track-info {
-  grid-area: meta;
+.image img {
+  width: 200px;
+  height: 200px;
 }
 
 .volume-outline {
@@ -84,11 +91,31 @@ body {
   list-style: none;
 }
 
-.neu {
-  box-shadow: -5px -5px 15px 0px #ffffff9e, 5px 5px 15px 0px #a3b1c6a8;
-  background: #e0e5ec;
-  border-radius: 2em;
-  border: 0;
+.title {
+  grid-area: title;
+}
+
+.metadata {
+  grid-area: meta;
+  display: flex;
+  /* justify-content: center; */
+  width: 90%;
+  flex-direction: column;
+}
+
+.metadata .label {
+  color: var(--blue1);
+}
+
+.time {
+  grid-area: time;
+  display: flex;
+  width: 90%;
+  justify-content: space-evenly;
+}
+
+.time .label {
+  color: var(--blue1);
 }
 
 .btn {
@@ -96,29 +123,26 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 12px;
   position: relative;
-  background: darkblue;
+  background: var(--blue4);
   z-index: 0;
-  border-top: 3px inset silver;
+  border-bottom: 1px inset var(--blue1);
+  border-right: 1px inset var(--blue1);
 }
-.btn.lg {
-  font-size: 1em;
+
+.btn:hover {
+  cursor: pointer;
 }
 .btn:active {
-  cursor: pointer;
-  box-shadow: inset -5px -5px 15px 0px #ffffff9e,
-    inset 5px 5px 15px 0px #a3b1c6a8;
+  transform: translateX(2px) translateY(2px);
 }
 
 .seekbar-outline,
 .volume-outline {
-  /* margin-top: 0.5rem; */
-  /* border: 2px solid gray; */
   border-radius: 10px;
   width: 280px;
   height: 1rem;
-  /*  box-shadow: 1px 1px darkgray; */
   background-color: MidnightBlue;
 }
 
