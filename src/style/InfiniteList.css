@@ -18,10 +18,8 @@
 .item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 70px;
-  margin: 0.5em;
-  padding: 1em;
+  /*  justify-items: space-around; */
+  margin: 0 0 0.2em 0;
   background: #0064d3;
   border-radius: 10px;
   padding: 0.5rem;
@@ -29,6 +27,15 @@
 
 .item a {
   color: white;
+  font-size: 0.8rem;
+}
+
+.item .label {
+  color: var(--blue1);
+}
+
+.label > * {
+  border: 2px solid red;
 }
 
 .itemloading {
@@ -36,5 +43,6 @@
 }
 
 .active {
-  background-color: red;
+  background-color: #203c56;
+  border: 5px solid var(--blue1);
 }

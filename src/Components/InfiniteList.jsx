@@ -130,7 +130,11 @@ const InfiniteList = ({
             >
               {item.artist && item.title && item.album ? (
                 <a href={item._id} id={item._id} val={index} onClick={onClick}>
-                  Artist:{item.artist} Title:{item.title} Album:{item.album}>
+                  Artist: {item.artist}
+                  <br></br>
+                  Title: {item.title}
+                  <br></br>
+                  Album: {item.album}>
                 </a>
               ) : (
                 <a href={item._id} id={item._id} val={index} onClick={onClick}>

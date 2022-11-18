@@ -137,7 +137,9 @@ function App() {
     <div className="container">
       <div className="audio-player">
         <div className="title">
-          {metadata ? <>{metadata.common.title.slice(0, 20)}</> : null}
+          {metadata && metadata.common.title ? (
+            <>{metadata.common.title.slice(0, 20)}</>
+          ) : null}
         </div>
 
         {cover && cover !== 'no available image' ? (
@@ -150,22 +152,24 @@ function App() {
           <p>{cover}</p>
         )}
         <div className="metadata">
-          {metadata ? (
-            <>
+          <>
+            {metadata && metadata.common.artist ? (
               <div>
                 <span className="label">Artist: </span>
                 <span className="real-time">
                   {metadata.common.artist.slice(0, 25)}
                 </span>
               </div>
+            ) : null}
+            {metadata && metadata.common.album ? (
               <div>
                 <span className="label">Album: </span>
                 <span className="real-time">
                   {metadata.common.album.slice(0, 25)}
-                </span>{' '}
+                </span>
               </div>
-            </>
-          ) : null}
+            ) : null}
+          </>
         </div>
 
         <div
