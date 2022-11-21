@@ -90,7 +90,8 @@ function App() {
     setProgbarInc(convertForProgbar * outlineWidth);
   }, [duration, currentTime]);
 
-  const handleListItem = async e => {
+  const handleListItem = async (e, ...rest) => {
+    console.log(rest);
     e.preventDefault();
     setCurrentVolume(audioRef.current.volume);
     setCurrentTrack(+e.target.getAttribute('val'));

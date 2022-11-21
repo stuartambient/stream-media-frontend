@@ -129,7 +129,12 @@ const InfiniteList = ({
               ref={items.length === index + 1 ? lastItemElement : scrollToView}
             >
               {item.artist && item.title && item.album ? (
-                <a href={item._id} id={item._id} val={index} onClick={onClick}>
+                <a
+                  href={item._id}
+                  id={item._id}
+                  val={index}
+                  onClick={e => onClick(e, item.artist, item.title, item.album)}
+                >
                   Artist: {item.artist}
                   <br></br>
                   Title: {item.title}
