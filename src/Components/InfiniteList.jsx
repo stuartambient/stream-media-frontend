@@ -3,11 +3,11 @@ import {
   useRef,
   useCallback,
   useEffect /* , useMemo */,
-} from 'react';
+} from "react";
 /* import axios from 'axios'; */
-import { v4 as uuidv4 } from 'uuid';
-import { usePlaylist } from '../hooks/useServer';
-import '../style/InfiniteList.css';
+import { v4 as uuidv4 } from "uuid";
+import { usePlaylist } from "../hooks/useServer";
+import "../style/InfiniteList.css";
 
 const InfiniteList = ({
   onClick,
@@ -21,7 +21,7 @@ const InfiniteList = ({
   const [pageNumber, setPageNumber] = useState(0);
   /* const [activeDiv, setActiveDiv] = useState(); */
   /*  const [loadNextPage, setLoadNextPage] = useState(false); */
-  const [textSearch, setTextSearch] = useState('');
+  const [textSearch, setTextSearch] = useState("");
   const { loading, items, hasMore, error } = usePlaylist(pageNumber);
 
   const scrollRef = useRef();
@@ -29,11 +29,11 @@ const InfiniteList = ({
   useEffect(() => {
     if (!items[currentTrack + 1]) return;
     if (currentTrack >= 0 && items) {
-      setNextTrack(items[currentTrack + 1]._id);
+      setNextTrack(items[currentTrack + 1].afid);
     }
 
     if (currentTrack >= 1) {
-      setPrevTrack(items[currentTrack - 1]._id);
+      setPrevTrack(items[currentTrack - 1].afid);
     }
   }, [currentTrack, items]);
 
@@ -51,7 +51,7 @@ const InfiniteList = ({
   };
 
   const handleTrackChange = trackId => {
-    const changeTrack = new Event('click', {
+    const changeTrack = new Event("click", {
       bubbles: true,
       cancelable: false,
     });
@@ -79,8 +79,8 @@ const InfiniteList = ({
           }
         },
         {
-          root: document.querySelector('.results'),
-          rootMargin: '0px',
+          root: document.querySelector(".results"),
+          rootMargin: "0px",
           threshold: 1.0,
         }
       );
@@ -92,9 +92,9 @@ const InfiniteList = ({
   const scrollToView = useCallback(
     node => {
       if (!node) return;
-      if (active && node && node.getAttribute('id') === `${active}--item-div`) {
+      if (active && node && node.getAttribute("id") === `${active}--item-div`) {
         scrollRef.current = node;
-        scrollRef.current.scrollIntoView();
+        /* scrollRef.current.scrollIntoView(); */
       }
       /*       if (active) {
         console.log(activeRef);
@@ -119,33 +119,29 @@ const InfiniteList = ({
           return (
             <div
               key={getKey()}
-              id={`${item._id}--item-div`}
+              id={`${item.afid}--item-div`}
               /* key={getKey()} */
               className={
-                `${active}--item-div` === `${item._id}--item-div`
-                  ? 'item active'
-                  : 'item'
+                `${active}--item-div` === `${item.afid}--item-div`
+                  ? "item active"
+                  : "item"
               }
               ref={items.length === index + 1 ? lastItemElement : scrollToView}
             >
-              {item.artist && item.title && item.album ? (
-                <a
-                  href={item._id}
-                  id={item._id}
-                  val={index}
-                  onClick={e => onClick(e, item.artist, item.title, item.album)}
-                >
-                  Artist: {item.artist}
-                  <br></br>
-                  Title: {item.title}
-                  <br></br>
-                  Album: {item.album}>
-                </a>
-              ) : (
-                <a href={item._id} id={item._id} val={index} onClick={onClick}>
-                  {item.file}
-                </a>
-              )}
+              <a
+                href={item.afid}
+                id={item.afid}
+                val={index}
+                onClick={e =>
+                  onClick(e, item.artist, item.title, item.album, item.picture)
+                }
+              >
+                Artist: {item.artist ? item.artist : "not available"}
+                <br></br>
+                Title: {item.title ? item.title : "not available"}
+                <br></br>
+                Album: {item.album ? item.album : "not available"}>
+              </a>
             </div>
           );
         })}

@@ -1,17 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
-import { v4 as uuidv4 } from 'uuid';
-import { GiPauseButton, GiPlayButton } from 'react-icons/gi';
-import { FaForward, FaBackward, FaListUl, FaHeart } from 'react-icons/fa';
-import { useMetadata } from './hooks/useServer';
+/* import { v4 as uuidv4 } from "uuid"; */
+import { GiPauseButton, GiPlayButton } from "react-icons/gi";
+import { FaForward, FaBackward, FaListUl, FaHeart } from "react-icons/fa";
+import { Buffer } from "buffer";
+/* import { useMetadata } from "./hooks/useServer"; */
 import {
   convertDuration,
   convertDurationSeconds,
   convertCurrentTime,
   convertToSeconds,
-} from './hooks/useTime';
-import InfiniteList from './Components/InfiniteList';
-import './App.css';
+} from "./hooks/useTime";
+import InfiniteList from "./Components/InfiniteList";
+import "./App.css";
 
 function App() {
   const [request, setRequest] = useState(false);
@@ -21,12 +22,17 @@ function App() {
   const [active, setActive] = useState();
   const [playNext, setPlayNext] = useState(false);
   const [playPrev, setPlayPrev] = useState(false);
-  const { metadata, cover } = useMetadata(url);
+  const [artist, setArtist] = useState();
+  const [title, setTitle] = useState();
+  const [album, setAlbum] = useState();
+  const [cover, setCover] = useState();
+  const [metadata, setMetadata] = useState();
+  /* const { metadata, cover } = useMetadata(url); */
 
   const audio = new Audio();
   const audioRef = useRef(audio);
-  const [duration, setDuration] = useState('');
-  const [currentTime, setCurrentTime] = useState('');
+  const [duration, setDuration] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
   const [pause, setPause] = useState(false);
   const [progbarInc, setProgbarInc] = useState(0);
   const [currentVolume, setCurrentVolume] = useState(1.0);
@@ -41,16 +47,16 @@ function App() {
 
     e.target.id ? (id = e.target.id) : (id = e.target.parentNode.id);
     switch (id) {
-      case 'playlist':
+      case "playlist":
         setRequest(() => !request);
         break;
-      case 'pauseplay':
+      case "pauseplay":
         setPause(() => !pause);
         break;
-      case 'backward':
+      case "backward":
         if (playNext) setPlayNext(false);
         return setPlayPrev(true);
-      case 'forward':
+      case "forward":
         if (playPrev) setPlayPrev(false);
         return setPlayNext(true);
       default:
@@ -80,7 +86,7 @@ function App() {
 
   useEffect(() => {
     if (pause) audioRef.current.pause();
-    if (!pause && url) audioRef.current.play();
+    if (!pause) audioRef.current.play();
   }, [pause, audioRef, url]);
 
   useEffect(() => {
@@ -90,18 +96,30 @@ function App() {
     setProgbarInc(convertForProgbar * outlineWidth);
   }, [duration, currentTime]);
 
-  const handleListItem = async (e, ...rest) => {
-    console.log(rest);
+  const handlePicture = buffer => {
+    if (buffer === null || buffer.data === null)
+      return setCover("not available");
+    const bufferToString = Buffer.from(buffer.data).toString("base64");
+    setCover(`data:${buffer.format};base64,${bufferToString}`);
+  };
+
+  const handleListItem = async (e, artist, title, album, picture = null) => {
     e.preventDefault();
+    setArtist(artist);
+    setTitle(title);
+    setAlbum(album);
+    handlePicture(picture);
+
     setCurrentVolume(audioRef.current.volume);
-    setCurrentTrack(+e.target.getAttribute('val'));
+    setCurrentTrack(+e.target.getAttribute("val"));
+
     audioRef.current.volume = currentVolume;
     setActive(e.target.id);
     setPlayNext(false);
     setPlayPrev(false);
     setPause(false);
     audioRef.current.src = `http://localhost:3008/tracks/${e.target.id}`;
-    setUrl(`track-metadata/${e.target.id}`);
+    /* setUrl(`track-metadata/${e.target.id}`); */
     audioRef.current.load();
   };
 
@@ -128,7 +146,7 @@ function App() {
       const mark = widthRange / outlineWidth;
       audioRef.current.volume = Math.round(mark * 10) / 10;
 
-      volumeslider.current.setAttribute('style', `width:${widthRange}px`);
+      volumeslider.current.setAttribute("style", `width:${widthRange}px`);
     } else {
       return;
     }
@@ -137,13 +155,9 @@ function App() {
   return (
     <div className="container">
       <div className="audio-player">
-        <div className="title">
-          {metadata && metadata.common.title ? (
-            <>{metadata.common.title.slice(0, 20)}</>
-          ) : null}
-        </div>
+        <div className="title">{title ? <>{title.slice(0, 20)}</> : null}</div>
 
-        {cover && cover !== 'no available image' ? (
+        {cover && cover !== "no available image" ? (
           <>
             <div className="image">
               <img src={cover} alt="" />
@@ -154,20 +168,16 @@ function App() {
         )}
         <div className="metadata">
           <>
-            {metadata && metadata.common.artist ? (
+            {artist ? (
               <div>
                 <span className="label">Artist: </span>
-                <span className="real-time">
-                  {metadata.common.artist.slice(0, 25)}
-                </span>
+                <span className="real-time">{artist.slice(0, 25)}</span>
               </div>
             ) : null}
-            {metadata && metadata.common.album ? (
+            {album ? (
               <div>
                 <span className="label">Album: </span>
-                <span className="real-time">
-                  {metadata.common.album.slice(0, 25)}
-                </span>
+                <span className="real-time">{album.slice(0, 25)}</span>
               </div>
             ) : null}
           </>
