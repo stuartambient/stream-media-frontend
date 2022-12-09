@@ -6,7 +6,7 @@ import axios from "axios";
   proxy: false,
 }); */
 
-export const usePlaylist = pageNumber => {
+export const usePlaylist = (pageNumber, searchText) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [items, setItems] = useState([]);
@@ -19,7 +19,7 @@ export const usePlaylist = pageNumber => {
     axios({
       method: "GET",
       url: "http://localhost:3008/alltracks/",
-      params: { page: pageNumber },
+      params: { page: pageNumber, text: searchText },
     })
       .then(res => {
         if (!ignore) {
@@ -39,5 +39,5 @@ export const usePlaylist = pageNumber => {
     };
   }, [pageNumber]);
 
-  return { loading, items, hasMore, error };
+  return { loading, items, setItems, hasMore, error };
 };

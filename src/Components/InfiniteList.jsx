@@ -22,7 +22,10 @@ const InfiniteList = ({
   /* const [activeDiv, setActiveDiv] = useState(); */
   /*  const [loadNextPage, setLoadNextPage] = useState(false); */
   const [textSearch, setTextSearch] = useState("");
-  const { loading, items, hasMore, error } = usePlaylist(pageNumber);
+  const { loading, items, setItems, hasMore, error } = usePlaylist(
+    pageNumber,
+    textSearch
+  );
 
   const scrollRef = useRef();
 
@@ -47,7 +50,10 @@ const InfiniteList = ({
   }, [playNext, nextTrack, playPrev, prevTrack]);
 
   const handleTextSearch = e => {
-    setTextSearch(e.target.value);
+    /* setTextSearch(e.target.value); */
+    e.preventDefault();
+    console.log(e.currentTarget.textsearch.value);
+    setItems([]);
   };
 
   const handleTrackChange = trackId => {
@@ -105,8 +111,20 @@ const InfiniteList = ({
 
   return (
     <>
-      <div className="textsearch">
-        <input type="text" value={textSearch} onChange={handleTextSearch} />
+      <div className="search">
+        <div className="radiogroup">
+          <input type="radio" id="files" name="searchtype" checked></input>files
+          <input type="radio" id="albums" name="searchtype"></input>albums
+        </div>
+        <form onSubmit={handleTextSearch}>
+          <input
+            type="text"
+            id="textsearch"
+            /* value={textSearch}  onChange={handleTextSearch} */
+          />
+
+          <button type="submit">search</button>
+        </form>
       </div>
       <div className="results" onScroll={handleListScroll}>
         {/* {loading && <div className="item itemloading">...Loading</div>} */}

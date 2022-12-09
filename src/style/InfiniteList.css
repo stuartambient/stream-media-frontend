@@ -8,11 +8,24 @@
   background-color: black;
 }
 
-.textsearch {
+.search {
   grid-column: 2 / 3;
   grid-row: 1 /2;
-  justify-self: center;
+  /* display: flex;
   align-self: center;
+  align-items: center; */
+  display: grid;
+  grid-template-columns: 20% 20% 60%;
+  align-items: center;
+}
+
+.search form {
+  grid-column: 3 / 4;
+}
+
+.radiogroup {
+  display: flex;
+  align-items: center;
 }
 
 .item {
