@@ -6,38 +6,32 @@ import axios from "axios";
   proxy: false,
 }); */
 
-export const usePlaylist = (pageNumber, searchText) => {
+export const usePlaylist = (type, pageNumber, searchText) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [items, setItems] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
-    let ignore = false;
+    /* let ignore = false; */
     setLoading(true);
     setError(false);
     axios({
       method: "GET",
       url: "http://localhost:3008/alltracks/",
-      params: { page: pageNumber, text: searchText },
+      params: { page: pageNumber, text: searchText, type: type },
     })
       .then(res => {
-        if (!ignore) {
-          console.log(res.data.results);
-          setItems(prevItems => {
-            return [...prevItems, ...res.data.results];
-          });
-          setHasMore(res.data.results.length > 0);
-          setLoading(false);
-        }
+        setItems(prevItems => {
+          return [...prevItems, ...res.data.results];
+        });
+        setHasMore(res.data.results.length > 0);
+        setLoading(false);
       })
       .catch(e => {
         setError(true);
       });
-    return () => {
-      ignore = true;
-    };
-  }, [pageNumber]);
+  }, [pageNumber, searchText, type]);
 
   return { loading, items, setItems, hasMore, error };
 };

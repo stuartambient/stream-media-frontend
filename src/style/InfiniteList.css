@@ -11,21 +11,65 @@
 .search {
   grid-column: 2 / 3;
   grid-row: 1 /2;
-  /* display: flex;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.form {
+  display: flex;
+}
+
+#files {
+  grid-column: 2 /3;
+}
+
+#albums {
+  grid-column: 1 / 2;
+}
+
+#files,
+#albums {
   align-self: center;
-  align-items: center; */
-  display: grid;
-  grid-template-columns: 20% 20% 60%;
+}
+
+.textsearch {
+  all: unset;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.textsearch,
+.submitbtn {
+  height: 1.5rem;
+}
+
+.submitbtn {
+  background: none;
+  border: none;
+}
+
+.submitbtn:hover {
+  cursor: pointer;
+}
+
+.formelements {
+  border: 1px solid white;
+  border-radius: 10px;
+  background: white;
+  height: 1.5rem;
+  display: flex;
   align-items: center;
 }
 
-.search form {
-  grid-column: 3 / 4;
+.icon {
+  font-size: 1.2rem;
+  color: var(--blue5);
 }
 
 .radiogroup {
   display: flex;
-  align-items: center;
+  /*   align-items: center; */
 }
 
 .item {
@@ -58,4 +102,13 @@
 .active {
   background-color: #203c56;
   border: 5px solid var(--blue1);
+}
+
+.noresults {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 2.2rem;
 }

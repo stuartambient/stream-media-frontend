@@ -5,8 +5,10 @@ import {
   useEffect /* , useMemo */,
 } from "react";
 /* import axios from 'axios'; */
+import { GiMagnifyingGlass } from "react-icons/gi";
 import { v4 as uuidv4 } from "uuid";
 import { usePlaylist } from "../hooks/useServer";
+import Switch from "./Switch";
 import "../style/InfiniteList.css";
 
 const InfiniteList = ({
@@ -19,10 +21,12 @@ const InfiniteList = ({
   const [nextTrack, setNextTrack] = useState(undefined);
   const [prevTrack, setPrevTrack] = useState();
   const [pageNumber, setPageNumber] = useState(0);
+  const [type, setType] = useState("files");
   /* const [activeDiv, setActiveDiv] = useState(); */
   /*  const [loadNextPage, setLoadNextPage] = useState(false); */
   const [textSearch, setTextSearch] = useState("");
   const { loading, items, setItems, hasMore, error } = usePlaylist(
+    type,
     pageNumber,
     textSearch
   );
@@ -52,7 +56,7 @@ const InfiniteList = ({
   const handleTextSearch = e => {
     /* setTextSearch(e.target.value); */
     e.preventDefault();
-    console.log(e.currentTarget.textsearch.value);
+    setTextSearch(e.currentTarget.textsearch.value);
     setItems([]);
   };
 
@@ -109,36 +113,79 @@ const InfiniteList = ({
     [active, scrollRef]
   );
 
+  const byFiles = items.map((item, index) => {
+    return (
+      <div
+        key={getKey()}
+        id={`${item.afid}--item-div`}
+        className={
+          `${active}--item-div` === `${item.afid}--item-div`
+            ? "item active"
+            : "item"
+        }
+        ref={items.length === index + 1 ? lastItemElement : scrollToView}
+      >
+        <a
+          href={item.afid}
+          id={item.afid}
+          val={index}
+          onClick={e =>
+            onClick(e, item.artist, item.title, item.album, item.picture)
+          }
+        >
+          Artist: {item.artist ? item.artist : "not available"}
+          <br></br>
+          Title: {item.title ? item.title : "not available"}
+          <br></br>
+          Album: {item.album ? item.album : "not available"}>
+        </a>
+      </div>
+    );
+  });
+
+  const byAlbums = items.map((item, index) => {
+    return (
+      <div
+        key={getKey()}
+        id={item._id}
+        className="item"
+        ref={items.length === index + 1 ? lastItemElement : scrollToView}
+      >
+        <a href={item.fullpath} id={item._id} val={index}>
+          {item.foldername}
+        </a>
+      </div>
+    );
+  });
+
   return (
     <>
       <div className="search">
-        <div className="radiogroup">
-          <input type="radio" id="files" name="searchtype" checked></input>files
-          <input type="radio" id="albums" name="searchtype"></input>albums
-        </div>
-        <form onSubmit={handleTextSearch}>
-          <input
-            type="text"
-            id="textsearch"
-            /* value={textSearch}  onChange={handleTextSearch} */
-          />
+        <Switch type={type} setType={setType} />
+        <div className="form">
+          <form onSubmit={handleTextSearch}>
+            <div className="formelements">
+              <input type="text" className="textsearch" id="textsearch" />
 
-          <button type="submit">search</button>
-        </form>
+              <button type="text" className="submitbtn">
+                <div className="icon">
+                  <GiMagnifyingGlass />
+                </div>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
       <div className="results" onScroll={handleListScroll}>
-        {/* {loading && <div className="item itemloading">...Loading</div>} */}
         {!items.length && !loading ? (
-          <div className="no-results">No results</div>
+          <div className="noresults">No results</div>
         ) : null}
-        {items.map((item, index) => {
-          /*       console.log(trigger, index);
-          /* if (items.length === index + 1) */
+        {byFiles}
+        {/* {items.map((item, index) => {
           return (
             <div
               key={getKey()}
               id={`${item.afid}--item-div`}
-              /* key={getKey()} */
               className={
                 `${active}--item-div` === `${item.afid}--item-div`
                   ? "item active"
@@ -162,7 +209,7 @@ const InfiniteList = ({
               </a>
             </div>
           );
-        })}
+        })} */}
 
         {loading && <div className="item itemloading">...Loading</div>}
       </div>
