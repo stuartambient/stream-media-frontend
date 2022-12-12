@@ -14,6 +14,7 @@ import "../style/InfiniteList.css";
 const InfiniteList = ({
   onClick,
   currentTrack,
+  setCurrentTrack,
   playNext,
   playPrev,
   active,
@@ -53,11 +54,19 @@ const InfiniteList = ({
     }
   }, [playNext, nextTrack, playPrev, prevTrack]);
 
+  const handleStateChange = () => {
+    setItems([]);
+    setCurrentTrack(undefined);
+    setNextTrack(undefined);
+    setPrevTrack(undefined);
+    setPageNumber(0);
+  };
+
   const handleTextSearch = e => {
     /* setTextSearch(e.target.value); */
     e.preventDefault();
+    handleStateChange();
     setTextSearch(e.currentTarget.textsearch.value);
-    setItems([]);
   };
 
   const handleTrackChange = trackId => {

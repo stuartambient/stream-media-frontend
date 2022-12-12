@@ -240,6 +240,7 @@ function App() {
           playNext={playNext}
           playPrev={playPrev}
           active={active}
+          setCurrentTrack={setCurrentTrack}
         />
       ) : null}
     </div>
