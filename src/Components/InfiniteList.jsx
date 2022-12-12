@@ -26,24 +26,21 @@ const InfiniteList = ({
   /* const [activeDiv, setActiveDiv] = useState(); */
   /*  const [loadNextPage, setLoadNextPage] = useState(false); */
   const [textSearch, setTextSearch] = useState("");
-  const { loading, items, setItems, hasMore, error } = usePlaylist(
-    type,
-    pageNumber,
-    textSearch
-  );
+  const { loading, files, setFiles, albums, setAlbums, hasMore, error } =
+    usePlaylist(type, pageNumber, textSearch);
 
   const scrollRef = useRef();
 
   useEffect(() => {
-    if (!items[currentTrack + 1]) return;
-    if (currentTrack >= 0 && items) {
-      setNextTrack(items[currentTrack + 1].afid);
+    if (!files[currentTrack + 1]) return;
+    if (currentTrack >= 0 && files) {
+      setNextTrack(files[currentTrack + 1].afid);
     }
 
     if (currentTrack >= 1) {
-      setPrevTrack(items[currentTrack - 1].afid);
+      setPrevTrack(files[currentTrack - 1].afid);
     }
-  }, [currentTrack, items]);
+  }, [currentTrack, files]);
 
   useEffect(() => {
     if (playNext && nextTrack) {
@@ -55,7 +52,7 @@ const InfiniteList = ({
   }, [playNext, nextTrack, playPrev, prevTrack]);
 
   const handleStateChange = () => {
-    setItems([]);
+    setFiles([]);
     setCurrentTrack(undefined);
     setNextTrack(undefined);
     setPrevTrack(undefined);
@@ -122,7 +119,7 @@ const InfiniteList = ({
     [active, scrollRef]
   );
 
-  const byFiles = items.map((item, index) => {
+  const byFiles = files.map((item, index) => {
     return (
       <div
         key={getKey()}
@@ -132,7 +129,7 @@ const InfiniteList = ({
             ? "item active"
             : "item"
         }
-        ref={items.length === index + 1 ? lastItemElement : scrollToView}
+        ref={files.length === index + 1 ? lastItemElement : scrollToView}
       >
         <a
           href={item.afid}
@@ -152,13 +149,13 @@ const InfiniteList = ({
     );
   });
 
-  const byAlbums = items.map((item, index) => {
+  const byAlbums = albums.map((item, index) => {
     return (
       <div
         key={getKey()}
         id={item._id}
         className="item"
-        ref={items.length === index + 1 ? lastItemElement : scrollToView}
+        ref={albums.length === index + 1 ? lastItemElement : scrollToView}
       >
         <a href={item.fullpath} id={item._id} val={index}>
           {item.foldername}
@@ -186,40 +183,10 @@ const InfiniteList = ({
         </div>
       </div>
       <div className="results" onScroll={handleListScroll}>
-        {!items.length && !loading ? (
+        {!files.length && !loading ? (
           <div className="noresults">No results</div>
         ) : null}
-        {byFiles}
-        {/* {items.map((item, index) => {
-          return (
-            <div
-              key={getKey()}
-              id={`${item.afid}--item-div`}
-              className={
-                `${active}--item-div` === `${item.afid}--item-div`
-                  ? "item active"
-                  : "item"
-              }
-              ref={items.length === index + 1 ? lastItemElement : scrollToView}
-            >
-              <a
-                href={item.afid}
-                id={item.afid}
-                val={index}
-                onClick={e =>
-                  onClick(e, item.artist, item.title, item.album, item.picture)
-                }
-              >
-                Artist: {item.artist ? item.artist : "not available"}
-                <br></br>
-                Title: {item.title ? item.title : "not available"}
-                <br></br>
-                Album: {item.album ? item.album : "not available"}>
-              </a>
-            </div>
-          );
-        })} */}
-
+        {type === "files" ? byFiles : byAlbums}
         {loading && <div className="item itemloading">...Loading</div>}
       </div>
     </>

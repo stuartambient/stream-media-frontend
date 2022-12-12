@@ -9,7 +9,8 @@ import axios from "axios";
 export const usePlaylist = (type, pageNumber, searchText) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [items, setItems] = useState([]);
+  const [files, setFiles] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export const usePlaylist = (type, pageNumber, searchText) => {
       params: { page: pageNumber, text: searchText, type: type },
     })
       .then(res => {
-        setItems(prevItems => {
+        setFiles(prevItems => {
           return [...prevItems, ...res.data.results];
         });
         setHasMore(res.data.results.length > 0);
@@ -33,5 +34,5 @@ export const usePlaylist = (type, pageNumber, searchText) => {
       });
   }, [pageNumber, searchText, type]);
 
-  return { loading, items, setItems, hasMore, error };
+  return { loading, files, setFiles, albums, setAlbums, hasMore, error };
 };
