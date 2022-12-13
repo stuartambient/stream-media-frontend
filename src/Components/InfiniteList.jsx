@@ -7,7 +7,8 @@ import {
 /* import axios from 'axios'; */
 import { GiMagnifyingGlass } from "react-icons/gi";
 import { v4 as uuidv4 } from "uuid";
-import { usePlaylist } from "../hooks/useServer";
+import { useFiles, useAlbums } from "../hooks/useDb";
+/* import { FilesList } from "./FilesList"; */
 import Switch from "./Switch";
 import "../style/InfiniteList.css";
 
@@ -21,15 +22,22 @@ const InfiniteList = ({
 }) => {
   const [nextTrack, setNextTrack] = useState(undefined);
   const [prevTrack, setPrevTrack] = useState();
-  const [pageNumber, setPageNumber] = useState(0);
+  const [filesPageNumber, setFilesPageNumber] = useState(0);
+  const [albumsPageNumber, setAlbumsPageNumber] = useState(0);
   const [type, setType] = useState("files");
   /* const [activeDiv, setActiveDiv] = useState(); */
   /*  const [loadNextPage, setLoadNextPage] = useState(false); */
-  const [textSearch, setTextSearch] = useState("");
-  const { loading, files, setFiles, albums, setAlbums, hasMore, error } =
-    usePlaylist(type, pageNumber, textSearch);
+  const [searchTermFiles, setSearchTermFiles] = useState("");
+  const [searchTermAlbums, setSearchTermFAlbums] = useState("");
+  const { filesLoading, files, setFiles, hasMoreFiles, filesError } = useFiles(
+    filesPageNumber,
+    searchTermFiles
+  );
+  const { albumsLoading, albums, setAlbums, hasMoreAlbums, albumsError } =
+    useAlbums(albumsPageNumber, searchTermAlbums);
 
   const scrollRef = useRef();
+  const searchRef = useRef();
 
   useEffect(() => {
     if (!files[currentTrack + 1]) return;
@@ -52,18 +60,28 @@ const InfiniteList = ({
   }, [playNext, nextTrack, playPrev, prevTrack]);
 
   const handleStateChange = () => {
-    setFiles([]);
     setCurrentTrack(undefined);
     setNextTrack(undefined);
     setPrevTrack(undefined);
-    setPageNumber(0);
   };
+
+  /*   useEffect(() => {
+    console.log("---->", searchRef.current);
+  }, [searchRef]); */
 
   const handleTextSearch = e => {
     /* setTextSearch(e.target.value); */
     e.preventDefault();
-    handleStateChange();
-    setTextSearch(e.currentTarget.textsearch.value);
+    /* handleStateChange(); */
+
+    if (type === "files") {
+      setSearchTermFiles(e.currentTarget.textsearch.value);
+      setFiles([]);
+      handleStateChange();
+    } else {
+      setSearchTermFAlbums(e.currentTarget.textsearch.value);
+      setAlbums([]);
+    }
   };
 
   const handleTrackChange = trackId => {
@@ -82,16 +100,18 @@ const InfiniteList = ({
   };
   const getKey = () => uuidv4();
 
-  const observer = useRef();
-  const lastItemElement = useCallback(
+  const filesObserver = useRef();
+  const albumsObserver = useRef();
+
+  const lastFileElement = useCallback(
     node => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver(
+      if (filesLoading) return;
+      if (filesObserver.current) filesObserver.current.disconnect();
+      filesObserver.current = new IntersectionObserver(
         entries => {
-          if (entries[0].isIntersecting && hasMore) {
+          if (entries[0].isIntersecting && hasMoreFiles) {
             /* console.log('entries: ', entries[0].isIntersecting, hasMore); */
-            setPageNumber(prevPageNumber => prevPageNumber + 1);
+            setFilesPageNumber(prevPageNumber => prevPageNumber + 1);
           }
         },
         {
@@ -100,9 +120,31 @@ const InfiniteList = ({
           threshold: 1.0,
         }
       );
-      if (node) observer.current.observe(node);
+      if (node) filesObserver.current.observe(node);
     },
-    [loading, hasMore]
+    [filesLoading, hasMoreFiles]
+  );
+
+  const lastAlbumElement = useCallback(
+    node => {
+      if (albumsLoading) return;
+      if (albumsObserver.current) albumsObserver.current.disconnect();
+      albumsObserver.current = new IntersectionObserver(
+        entries => {
+          if (entries[0].isIntersecting && hasMoreAlbums) {
+            /* console.log('entries: ', entries[0].isIntersecting, hasMore); */
+            setAlbumsPageNumber(prevPageNumber => prevPageNumber + 1);
+          }
+        },
+        {
+          root: document.querySelector(".results"),
+          rootMargin: "0px",
+          threshold: 1.0,
+        }
+      );
+      if (node) albumsObserver.current.observe(node);
+    },
+    [albumsLoading, hasMoreAlbums]
   );
 
   const scrollToView = useCallback(
@@ -110,7 +152,7 @@ const InfiniteList = ({
       if (!node) return;
       if (active && node && node.getAttribute("id") === `${active}--item-div`) {
         scrollRef.current = node;
-        /* scrollRef.current.scrollIntoView(); */
+        scrollRef.current.scrollIntoView();
       }
       /*       if (active) {
         console.log(activeRef);
@@ -129,7 +171,7 @@ const InfiniteList = ({
             ? "item active"
             : "item"
         }
-        ref={files.length === index + 1 ? lastItemElement : scrollToView}
+        ref={files.length === index + 1 ? lastFileElement : scrollToView}
       >
         <a
           href={item.afid}
@@ -155,7 +197,7 @@ const InfiniteList = ({
         key={getKey()}
         id={item._id}
         className="item"
-        ref={albums.length === index + 1 ? lastItemElement : scrollToView}
+        ref={albums.length === index + 1 ? lastAlbumElement : scrollToView}
       >
         <a href={item.fullpath} id={item._id} val={index}>
           {item.foldername}
@@ -171,7 +213,12 @@ const InfiniteList = ({
         <div className="form">
           <form onSubmit={handleTextSearch}>
             <div className="formelements">
-              <input type="text" className="textsearch" id="textsearch" />
+              <input
+                type="text"
+                className="textsearch"
+                id="textsearch"
+                ref={searchRef}
+              />
 
               <button type="text" className="submitbtn">
                 <div className="icon">
@@ -183,11 +230,19 @@ const InfiniteList = ({
         </div>
       </div>
       <div className="results" onScroll={handleListScroll}>
-        {!files.length && !loading ? (
+        {type === "files" && !files.length && !filesLoading ? (
+          <div className="noresults">No results</div>
+        ) : null}
+        {type === "albums" && !albums.length && !albumsLoading ? (
           <div className="noresults">No results</div>
         ) : null}
         {type === "files" ? byFiles : byAlbums}
-        {loading && <div className="item itemloading">...Loading</div>}
+        {type === "files"
+          ? filesLoading && <div className="item itemloading">...Loading</div>
+          : null}
+        {type === "albums"
+          ? albumsLoading && <div className="item itemloading">...Loading</div>
+          : null}
       </div>
     </>
   );

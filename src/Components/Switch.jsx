@@ -8,10 +8,12 @@ const Switch = ({ type, setType }) => {
     const switchAttr = switchRef.current.getAttribute("data-type");
     switch (switchAttr) {
       case "files":
+        /* resetState(); */
         switchRef.current.setAttribute("data-type", "albums");
         setType("albums");
         break;
       case "albums":
+        /* resetState(); */
         switchRef.current.setAttribute("data-type", "files");
         setType("files");
         break;
