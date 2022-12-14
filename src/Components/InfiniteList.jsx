@@ -6,6 +6,13 @@ import {
 } from "react";
 /* import axios from 'axios'; */
 import { GiMagnifyingGlass } from "react-icons/gi";
+import {
+  ArchiveAdd,
+  AddCircle,
+  Help,
+  Playlist,
+  Shuffle,
+} from "../assets/icons";
 import { v4 as uuidv4 } from "uuid";
 import { useFiles, useAlbums } from "../hooks/useDb";
 /* import { FilesList } from "./FilesList"; */
@@ -29,6 +36,8 @@ const InfiniteList = ({
   /*  const [loadNextPage, setLoadNextPage] = useState(false); */
   const [searchTermFiles, setSearchTermFiles] = useState("");
   const [searchTermAlbums, setSearchTermFAlbums] = useState("");
+
+  const [randomize, setRandomize] = useState(false);
   const { filesLoading, files, setFiles, hasMoreFiles, filesError } = useFiles(
     filesPageNumber,
     searchTermFiles
@@ -98,6 +107,20 @@ const InfiniteList = ({
   const handleListScroll = e => {
     /* console.log(scrollRef.current); */
   };
+
+  const randomizeIcon = useRef(null);
+
+  const handleRandomize = e => {
+    setRandomize(!randomize);
+    /* randomizeIcon.current.classlist.toggle("icon-on"); */
+
+    if (e.target.classList.contains("menu-icons-active")) {
+      e.target.classList.remove("menu-icons-active");
+    } else {
+      e.target.classList.add("menu-icons-active");
+    }
+  };
+
   const getKey = () => uuidv4();
 
   const filesObserver = useRef();
@@ -228,6 +251,17 @@ const InfiniteList = ({
             </div>
           </form>
         </div>
+        {/* <ul className="topmenu">
+          <li>
+            <ArchiveAdd />
+          </li>
+          <li>
+            <Playlist />
+          </li>
+          <li>
+            <Shuffle />
+          </li>
+        </ul> */}
       </div>
       <div className="results" onScroll={handleListScroll}>
         {type === "files" && !files.length && !filesLoading ? (

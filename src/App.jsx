@@ -5,6 +5,7 @@ import { GiPauseButton, GiPlayButton } from "react-icons/gi";
 import { FaForward, FaBackward, FaListUl, FaHeart } from "react-icons/fa";
 import { Buffer } from "buffer";
 /* import { useMetadata } from "./hooks/useServer"; */
+import { ArchiveAdd, AddCircle, Help, Playlist, Shuffle } from "./assets/icons";
 import {
   convertDuration,
   convertDurationSeconds,
@@ -230,6 +231,17 @@ function App() {
           </li>
           <li className="btn" id="playlist" onClick={e => handleClick(e)}>
             <FaListUl id="playlist" className="icon" />
+          </li>
+        </ul>
+        <ul className="topmenu">
+          <li>
+            <ArchiveAdd />
+          </li>
+          <li>
+            <Playlist />
+          </li>
+          <li>
+            <Shuffle />
           </li>
         </ul>
       </div>

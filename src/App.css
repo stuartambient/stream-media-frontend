@@ -10,7 +10,7 @@ body {
   margin: 0;
   background: #e0e5ec;
   background: slategray;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   box-sizing: border-box;
   width: 100vw;
   height: 100vh;
@@ -35,18 +35,18 @@ body {
   /*  width: 300px;
   height: 600px; */
   /* justify-self: end; */
-  grid-template-rows: auto 200px repeat(5, auto);
+  grid-template-rows: auto 200px repeat(5, auto) 10%;
   grid-template-columns: 300px;
   /* padding: 1rem; */
 
   grid-template-areas:
-    'title'
-    'image'
-    'meta'
-    'volumebar'
-    'time'
-    'seekbar'
-    'controls';
+    "title"
+    "image"
+    "meta"
+    "volumebar"
+    "time"
+    "seekbar"
+    "controls";
 
   /* grid-row-gap: 1rem; */
   color: white;
@@ -84,11 +84,12 @@ body {
 
 .controls {
   grid-area: controls;
-  padding: 1rem;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 90%;
   list-style: none;
+  margin: auto 0;
+  padding: 0;
 }
 
 .title {
@@ -162,4 +163,40 @@ body {
 
 .volumebar {
   width: 100%;
+}
+
+.topmenu {
+  justify-self: end;
+  list-style: none;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0;
+  width: 50%;
+}
+
+.topmenu li {
+  border: 2px solid var(--blue2);
+  border-radius: 50%;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topmenu li svg {
+  height: 16px;
+  width: 16px;
+}
+
+.topmenu li:hover {
+  cursor: pointer;
+}
+
+.topmenu li:hover:before {
+  display: "";
+  filter: blur(30px);
+}
+
+.topmenu li svg path {
+  fill: var(--blue1);
 }
