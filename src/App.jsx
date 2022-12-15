@@ -233,17 +233,6 @@ function App() {
             <FaListUl id="playlist" className="icon" />
           </li>
         </ul>
-        <ul className="topmenu">
-          <li>
-            <ArchiveAdd />
-          </li>
-          <li>
-            <Playlist />
-          </li>
-          <li>
-            <Shuffle />
-          </li>
-        </ul>
       </div>
       {request ? (
         <InfiniteList

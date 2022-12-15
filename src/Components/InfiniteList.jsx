@@ -251,17 +251,20 @@ const InfiniteList = ({
             </div>
           </form>
         </div>
-        {/* <ul className="topmenu">
+        <ul className="topmenu">
           <li>
-            <ArchiveAdd />
+            <ArchiveAdd id="add2archive" />
+            <span>Scan for changes</span>
           </li>
           <li>
-            <Playlist />
+            <Playlist id="playlist" />
+            <span>Load playlist</span>
           </li>
           <li>
-            <Shuffle />
+            <Shuffle id="shuffle" />
+            <span>Shuffle playlist</span>
           </li>
-        </ul> */}
+        </ul>
       </div>
       <div className="results" onScroll={handleListScroll}>
         {type === "files" && !files.length && !filesLoading ? (
