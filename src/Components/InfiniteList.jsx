@@ -12,9 +12,11 @@ import {
   Help,
   Playlist,
   Shuffle,
+  Plus,
+  Minus,
 } from "../assets/icons";
 import { v4 as uuidv4 } from "uuid";
-import { useFiles, useAlbums } from "../hooks/useDb";
+import { useFiles, useAlbums, useAlbumTracks } from "../hooks/useDb";
 /* import { FilesList } from "./FilesList"; */
 import Switch from "./Switch";
 import "../style/InfiniteList.css";
@@ -38,12 +40,20 @@ const InfiniteList = ({
   const [searchTermAlbums, setSearchTermFAlbums] = useState("");
 
   const [randomize, setRandomize] = useState(false);
+  const [albumPath, setAlbumPath] = useState();
+  const [showMore, setShowMore] = useState(null);
   const { filesLoading, files, setFiles, hasMoreFiles, filesError } = useFiles(
     filesPageNumber,
     searchTermFiles
   );
   const { albumsLoading, albums, setAlbums, hasMoreAlbums, albumsError } =
     useAlbums(albumsPageNumber, searchTermAlbums);
+
+  const { tracks } = useAlbumTracks(albumPath);
+
+  /*   useEffect(() => {
+    if (tracks) console.log(tracks);
+  }, [tracks]); */
 
   const scrollRef = useRef();
   const searchRef = useRef();
@@ -106,6 +116,17 @@ const InfiniteList = ({
 
   const handleListScroll = e => {
     /* console.log(scrollRef.current); */
+  };
+
+  const handleAlbumTracksRequest = e => {
+    /* const term = e.currentTarget.getAttribute("term"); */
+    showMore === e.currentTarget.id
+      ? setShowMore(null)
+      : setShowMore(e.currentTarget.id);
+
+    /*setAlbumPath(e.currentTarget.id); */
+    /*  console.log(e.currentTarget.id, e.currentTarget.childNodes[0].id); */
+    /* setAlbumPath(albumPath); */
   };
 
   const randomizeIcon = useRef(null);
@@ -222,9 +243,29 @@ const InfiniteList = ({
         className="item"
         ref={albums.length === index + 1 ? lastAlbumElement : scrollToView}
       >
-        <a href={item.fullpath} id={item._id} val={index}>
+        <a
+          /* type="input"
+          href="#" */
+          href="http://"
+          id={item._id}
+          val={index}
+          /* onClick={handleAlbumTracksRequest} */
+          style={{ color: "white", cursor: "pointer" }}
+        >
           {item.foldername}
         </a>
+        <div
+          id={item._id}
+          term={item.fullpath}
+          onClick={handleAlbumTracksRequest}
+        >
+          {showMore === item._id ? <Minus id="minus" /> : <Plus id="plus" />}
+        </div>
+        {/*  {showAlbumTracks && tracks
+          ? tracks.map(track => {
+              return <div>{track.audioFile}</div>;
+            })
+          : null} */}
       </div>
     );
   });

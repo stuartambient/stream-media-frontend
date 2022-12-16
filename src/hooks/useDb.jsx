@@ -68,4 +68,25 @@ const useAlbums = (albumsPageNumber, searchTermAlbums) => {
   return { albumsLoading, albums, setAlbums, hasMoreAlbums, albumsError };
 };
 
-export { useFiles, useAlbums };
+const useAlbumTracks = albumId => {
+  const [tracks, setTracks] = useState([]);
+  const [error, setError] = useState([]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3008/albumtracks/",
+      params: { pattern: albumId },
+    })
+      .then(res => {
+        setTracks(res.data);
+        /* }); */
+      })
+      .catch(e => {
+        setError(e.message);
+      });
+  }, [albumId]);
+  return { tracks };
+};
+
+export { useFiles, useAlbums, useAlbumTracks };

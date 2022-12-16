@@ -83,4 +83,36 @@ const Shuffle = () => (
   </svg>
 );
 
-export { ArchiveAdd, AddCircle, Help, Playlist, Shuffle };
+const Plus = () => (
+  <svg
+    id="plus"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M10 18C10 19.1046 10.8954 20 12 20C13.1046 20 14 19.1046 14 18V14H18C19.1046 14 20 13.1046 20 12C20 10.8954 19.1046 10 18 10H14V6C14 4.89543 13.1046 4 12 4C10.8954 4 10 4.89543 10 6V10L6 10C4.89543 10 4 10.8954 4 12C4 13.1046 4.89543 14 6 14L10 14V18Z"
+      fill="#28303F"
+    />
+  </svg>
+);
+
+const Minus = () => (
+  <svg
+    id="minus"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M18 12.75C18.4142 12.75 18.75 12.4142 18.75 12C18.75 11.5858 18.4142 11.25 18 11.25V12.75ZM6 11.25C5.58579 11.25 5.25 11.5858 5.25 12C5.25 12.4142 5.58579 12.75 6 12.75L6 11.25ZM18 11.25L6 11.25L6 12.75L18 12.75V11.25Z"
+      fill="#28303F"
+    />
+  </svg>
+);
+
+export { ArchiveAdd, AddCircle, Help, Playlist, Shuffle, Plus, Minus };
