@@ -121,3 +121,9 @@ div #plus path {
 div #minus path {
   fill: white;
 }
+
+.albumtracks {
+  list-style: none;
+  color: white;
+  padding: 0 1rem;
+}

@@ -73,20 +73,22 @@ const useAlbumTracks = albumId => {
   const [error, setError] = useState([]);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3008/albumtracks/",
-      params: { pattern: albumId },
-    })
-      .then(res => {
-        setTracks(res.data);
-        /* }); */
+    if (albumId) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3008/albumtracks/",
+        params: { pattern: albumId },
       })
-      .catch(e => {
-        setError(e.message);
-      });
+        .then(res => {
+          setTracks(res.data);
+          /* }); */
+        })
+        .catch(e => {
+          setError(e.message);
+        });
+    }
   }, [albumId]);
-  return { tracks };
+  return { tracks, setTracks };
 };
 
 export { useFiles, useAlbums, useAlbumTracks };

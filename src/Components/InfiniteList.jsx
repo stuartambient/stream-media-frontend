@@ -40,7 +40,7 @@ const InfiniteList = ({
   const [searchTermAlbums, setSearchTermFAlbums] = useState("");
 
   const [randomize, setRandomize] = useState(false);
-  const [albumPath, setAlbumPath] = useState();
+  const [albumPath, setAlbumPath] = useState("");
   const [showMore, setShowMore] = useState(null);
   const { filesLoading, files, setFiles, hasMoreFiles, filesError } = useFiles(
     filesPageNumber,
@@ -49,10 +49,21 @@ const InfiniteList = ({
   const { albumsLoading, albums, setAlbums, hasMoreAlbums, albumsError } =
     useAlbums(albumsPageNumber, searchTermAlbums);
 
-  const { tracks } = useAlbumTracks(albumPath);
+  const { tracks, setTracks } = useAlbumTracks(albumPath);
+
+  /*   const tracksMapped = tracks.map(track => <li>{track.audioFile}</li>); */
+  const albumTracks = tracks.map(track => {
+    if (track.title) {
+      return <li>{track.title}</li>;
+    } else {
+      <li>{track.audioFile}</li>;
+    }
+  });
 
   /*   useEffect(() => {
-    if (tracks) console.log(tracks);
+    if (Array.isArray(tracks)) {
+      albumTracks = tracks.map(track => <li>{track.audioFile}</li>);
+    }
   }, [tracks]); */
 
   const scrollRef = useRef();
@@ -96,7 +107,7 @@ const InfiniteList = ({
     if (type === "files") {
       setSearchTermFiles(e.currentTarget.textsearch.value);
       setFiles([]);
-      handleStateChange();
+      /* handleStateChange(); */
     } else {
       setSearchTermFAlbums(e.currentTarget.textsearch.value);
       setAlbums([]);
@@ -119,14 +130,19 @@ const InfiniteList = ({
   };
 
   const handleAlbumTracksRequest = e => {
-    /* const term = e.currentTarget.getAttribute("term"); */
-    showMore === e.currentTarget.id
+    const term = e.currentTarget.getAttribute("term");
+    if (showMore === e.currentTarget.id) {
+      setShowMore(null);
+      setTracks([]);
+      setAlbumPath(null);
+    } else {
+      setShowMore(e.currentTarget.id);
+      setAlbumPath(term);
+    }
+    /*   showMore === e.currentTarget.id
       ? setShowMore(null)
       : setShowMore(e.currentTarget.id);
-
-    /*setAlbumPath(e.currentTarget.id); */
-    /*  console.log(e.currentTarget.id, e.currentTarget.childNodes[0].id); */
-    /* setAlbumPath(albumPath); */
+    setAlbumPath(term); */
   };
 
   const randomizeIcon = useRef(null);
@@ -261,11 +277,9 @@ const InfiniteList = ({
         >
           {showMore === item._id ? <Minus id="minus" /> : <Plus id="plus" />}
         </div>
-        {/*  {showAlbumTracks && tracks
-          ? tracks.map(track => {
-              return <div>{track.audioFile}</div>;
-            })
-          : null} */}
+        {albumPath === item.fullpath && tracks.length ? (
+          <ul className="albumtracks">{albumTracks}</ul>
+        ) : null}
       </div>
     );
   });
