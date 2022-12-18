@@ -1,23 +1,9 @@
-import {
-  useState,
-  useRef,
-  useCallback,
-  useEffect /* , useMemo */,
-} from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 /* import axios from 'axios'; */
 import { GiMagnifyingGlass } from "react-icons/gi";
-import {
-  ArchiveAdd,
-  AddCircle,
-  Help,
-  Playlist,
-  Shuffle,
-  Plus,
-  Minus,
-} from "../assets/icons";
+import { ArchiveAdd, Playlist, Shuffle, Plus, Minus } from "../assets/icons";
 import { v4 as uuidv4 } from "uuid";
 import { useFiles, useAlbums, useAlbumTracks } from "../hooks/useDb";
-/* import { FilesList } from "./FilesList"; */
 import Switch from "./Switch";
 import "../style/InfiniteList.css";
 
@@ -34,11 +20,8 @@ const InfiniteList = ({
   const [filesPageNumber, setFilesPageNumber] = useState(0);
   const [albumsPageNumber, setAlbumsPageNumber] = useState(0);
   const [type, setType] = useState("files");
-  /* const [activeDiv, setActiveDiv] = useState(); */
-  /*  const [loadNextPage, setLoadNextPage] = useState(false); */
   const [searchTermFiles, setSearchTermFiles] = useState("");
   const [searchTermAlbums, setSearchTermFAlbums] = useState("");
-
   const [randomize, setRandomize] = useState(false);
   const [albumPath, setAlbumPath] = useState("");
   const [showMore, setShowMore] = useState(null);
@@ -51,7 +34,6 @@ const InfiniteList = ({
 
   const { tracks, setTracks } = useAlbumTracks(albumPath);
 
-  /*   const tracksMapped = tracks.map(track => <li>{track.audioFile}</li>); */
   const albumTracks = tracks.map(track => {
     if (track.title) {
       return <li>{track.title}</li>;
@@ -59,12 +41,6 @@ const InfiniteList = ({
       <li>{track.audioFile}</li>;
     }
   });
-
-  /*   useEffect(() => {
-    if (Array.isArray(tracks)) {
-      albumTracks = tracks.map(track => <li>{track.audioFile}</li>);
-    }
-  }, [tracks]); */
 
   const scrollRef = useRef();
   const searchRef = useRef();
@@ -82,9 +58,11 @@ const InfiniteList = ({
 
   useEffect(() => {
     if (playNext && nextTrack) {
+      console.log("next");
       handleTrackChange(nextTrack);
     }
     if (playPrev && prevTrack) {
+      console.log("prev");
       handleTrackChange(prevTrack);
     }
   }, [playNext, nextTrack, playPrev, prevTrack]);
@@ -94,10 +72,6 @@ const InfiniteList = ({
     setNextTrack(undefined);
     setPrevTrack(undefined);
   };
-
-  /*   useEffect(() => {
-    console.log("---->", searchRef.current);
-  }, [searchRef]); */
 
   const handleTextSearch = e => {
     /* setTextSearch(e.target.value); */
@@ -115,6 +89,7 @@ const InfiniteList = ({
   };
 
   const handleTrackChange = trackId => {
+    console.log("trackId: ", trackId);
     const changeTrack = new Event("click", {
       bubbles: true,
       cancelable: false,
@@ -212,7 +187,7 @@ const InfiniteList = ({
       if (!node) return;
       if (active && node && node.getAttribute("id") === `${active}--item-div`) {
         scrollRef.current = node;
-        scrollRef.current.scrollIntoView();
+        /* scrollRef.current.scrollIntoView(); */
       }
       /*       if (active) {
         console.log(activeRef);

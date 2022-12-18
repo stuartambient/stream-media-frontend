@@ -1,11 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-
-/* import { v4 as uuidv4 } from "uuid"; */
+import { useState, useEffect, useRef, useReducer } from "react";
 import { GiPauseButton, GiPlayButton } from "react-icons/gi";
 import { FaForward, FaBackward, FaListUl, FaHeart } from "react-icons/fa";
 import { Buffer } from "buffer";
-/* import { useMetadata } from "./hooks/useServer"; */
-import { ArchiveAdd, AddCircle, Help, Playlist, Shuffle } from "./assets/icons";
 import {
   convertDuration,
   convertDurationSeconds,
@@ -18,7 +14,36 @@ import "./App.css";
 function App() {
   const [request, setRequest] = useState(false);
   /* const [playlist, setPlaylist] = useState(); */
-  const [url, setUrl] = useState();
+  /* const [url, setUrl] = useState(); */
+
+  const reducer = (state, action) => {};
+  const audioPlayer = {
+    active: "",
+    currentTrack: "",
+    playNext: false,
+    playPrev: false,
+    nextTrack: "",
+    prevTrack: "",
+    artist: "",
+    title: "",
+    album: "",
+    cover: "",
+    duration: "",
+    currentTime: "",
+    pause: false,
+    progbarInc: 0,
+    currentVolume: 1.0,
+    filesPageNumber: 0,
+    albumsPageNumber: 0,
+    type: "files",
+    searchTermFiles: "",
+    searchTermAlbums: "",
+    randomize: false,
+    albumPath: "",
+    showMore: null,
+  };
+
+  const [state, dispatch] = useReducer(reducer, audioPlayer);
   const [currentTrack, setCurrentTrack] = useState();
   const [active, setActive] = useState();
   const [playNext, setPlayNext] = useState(false);
@@ -27,7 +52,7 @@ function App() {
   const [title, setTitle] = useState();
   const [album, setAlbum] = useState();
   const [cover, setCover] = useState();
-  const [metadata, setMetadata] = useState();
+  /* const [metadata, setMetadata] = useState(); */
   /* const { metadata, cover } = useMetadata(url); */
 
   const audio = new Audio();
@@ -37,7 +62,7 @@ function App() {
   const [pause, setPause] = useState(false);
   const [progbarInc, setProgbarInc] = useState(0);
   const [currentVolume, setCurrentVolume] = useState(1.0);
-  const [volumebarWidth, setVolumebarWidth] = useState();
+  /* const [volumebarWidth, setVolumebarWidth] = useState(); */
 
   const seekbarOutline = useRef();
   const volumebarOutline = useRef();
@@ -88,7 +113,7 @@ function App() {
   useEffect(() => {
     if (pause) audioRef.current.pause();
     if (!pause) audioRef.current.play();
-  }, [pause, audioRef, url]);
+  }, [pause, audioRef /* , url */]);
 
   useEffect(() => {
     const outlineWidth = seekbarOutline.current.clientWidth;
