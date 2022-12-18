@@ -16,34 +16,6 @@ function App() {
   /* const [playlist, setPlaylist] = useState(); */
   /* const [url, setUrl] = useState(); */
 
-  const reducer = (state, action) => {};
-  const audioPlayer = {
-    active: "",
-    currentTrack: "",
-    playNext: false,
-    playPrev: false,
-    nextTrack: "",
-    prevTrack: "",
-    artist: "",
-    title: "",
-    album: "",
-    cover: "",
-    duration: "",
-    currentTime: "",
-    pause: false,
-    progbarInc: 0,
-    currentVolume: 1.0,
-    filesPageNumber: 0,
-    albumsPageNumber: 0,
-    type: "files",
-    searchTermFiles: "",
-    searchTermAlbums: "",
-    randomize: false,
-    albumPath: "",
-    showMore: null,
-  };
-
-  const [state, dispatch] = useReducer(reducer, audioPlayer);
   const [currentTrack, setCurrentTrack] = useState();
   const [active, setActive] = useState();
   const [playNext, setPlayNext] = useState(false);
@@ -61,7 +33,7 @@ function App() {
   const [currentTime, setCurrentTime] = useState("");
   const [pause, setPause] = useState(false);
   const [progbarInc, setProgbarInc] = useState(0);
-  const [currentVolume, setCurrentVolume] = useState(1.0);
+  /*  const [currentVolume, setCurrentVolume] = useState(1.0); */
   /* const [volumebarWidth, setVolumebarWidth] = useState(); */
 
   const seekbarOutline = useRef();
@@ -136,10 +108,11 @@ function App() {
     setAlbum(album);
     handlePicture(picture);
 
-    setCurrentVolume(audioRef.current.volume);
+    /* setCurrentVolume(audioRef.current.volume); */
+    console.log("e-target: ", e.target);
     setCurrentTrack(+e.target.getAttribute("val"));
 
-    audioRef.current.volume = currentVolume;
+    /* audioRef.current.volume = currentVolume; */
     setActive(e.target.id);
     setPlayNext(false);
     setPlayPrev(false);
@@ -208,7 +181,7 @@ function App() {
             ) : null}
           </>
         </div>
-
+        <div style={{ color: "white" }}>{audioRef.current.volume * 10}</div>
         <div
           className="volume-outline"
           onMouseMove={handleVolume}
